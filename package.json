@@ -6,8 +6,7 @@
     "dev": "cross-env HOST=0.0.0.0 next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "postinstall": "patch-package"
+    "lint": "next lint"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.24.0",
