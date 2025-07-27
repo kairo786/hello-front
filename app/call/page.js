@@ -66,6 +66,7 @@ export default function Callpage() {
   const route = useRouter();
   const [emoji, setEmoji] = useState('😐');
   const [modelsLoaded, setModelsLoaded] = useState(false);
+  const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
 
   const emojiMap = {
     happy: "😁",
@@ -81,8 +82,8 @@ export default function Callpage() {
     const loadModels = async () => {
       try {
         await Promise.all([
-          faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
-          faceapi.nets.faceExpressionNet.loadFromUri('/models')
+          faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+          faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
         ]);
         
         setModelsLoaded(true);
