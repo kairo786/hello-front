@@ -20,7 +20,7 @@ export const SocketProvider = ({ children, userData }) => {
   // frontend (localhost:3000)
 
   if (!socketRef.current) {
-socketRef.current = io("https://hello-backend-project.onrender.com/", {
+socketRef.current = io("https://hello-backend-project.onrender.com", {
   withCredentials: true,
   autoConnect: false,
 });
