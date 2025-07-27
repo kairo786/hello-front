@@ -22,7 +22,10 @@ const geistMono = Geist_Mono({
 
 export default function RootLayout({ children }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+    publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+  authorizedParties={['https://hello-front-or8v-git-main-ankit-keros-projects.vercel.app']}
+  allowedRedirectOrigins={['https://hello-front-or8v-git-main-ankit-keros-projects.vercel.app']}>
       <html lang="en">
         <head>
           <Script
