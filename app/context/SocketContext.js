@@ -20,7 +20,8 @@ export const SocketProvider = ({ children, userData }) => {
   // frontend (localhost:3000)
 
   if (!socketRef.current) {
-socketRef.current = io("https://hello-backend-project.onrender.com", {
+socketRef.current = io("https://hello-backend-project.onrender.com",{
+// socketRef.current = io("http://localhost:3001", {
   withCredentials: true,
   autoConnect: false,
 });
@@ -46,13 +47,15 @@ socketRef.current = io("https://hello-backend-project.onrender.com", {
       socket.once("connect", handleConnect);
     }
 
-    // 🔌 Cleanup on unmount
-    return () => {
-      if (socket.connected) {
-        socket.disconnect();
-        console.log("🔌 Socket disconnected");
-      }
-    };
+   {/*// 🔌 Cleanup on unmount
+    // return () => {
+    //   if (socket.connected) {
+    //     socket.disconnect();
+    //     console.log("🔌 Socket disconnected");
+    //   }
+    // };
+    // 
+    */}
   }, [userData]);
 
   return (
