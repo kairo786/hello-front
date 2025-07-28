@@ -3,59 +3,46 @@
 import React, { createContext, useContext, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 
-// 1️⃣ Create context
+// ✅ 1. Create Socket Context
 const SocketContext = createContext(null);
 
-// 2️⃣ Provider component
+// ✅ 2. Provider Component
 export const SocketProvider = ({ children, userData }) => {
   const socketRef = useRef(null);
 
-  // Initialize socket only once
-  // if (!socketRef.current) {
-  //   socketRef.current = io("http://localhost:3001", {
-  //     withCredentials: true,
-  //     autoConnect: false, // connect manually later
-  //   });
-  // }
-  // frontend (localhost:3000)
-
+  // ✅ Initialize socket only once
   if (!socketRef.current) {
-socketRef.current = io("https://hello-backend-project.onrender.com",{
-// socketRef.current = io("http://localhost:3001", {
-  withCredentials: true,
-  autoConnect: false,
-});
+    socketRef.current = io("https://hello-backend-project.onrender.com", {
+      // socketRef.current = io("http://localhost:3001", { // for local dev
+      withCredentials: true,
+      autoConnect: false,
+    });
   }
-   
+
   useEffect(() => {
     const socket = socketRef.current;
-
     if (!socket || !userData) return;
 
-    // 🔁 Join only once after socket connects
+    // ✅ Join user after successful connection
     const handleConnect = () => {
       console.log("✅ Socket connected:", socket.id);
       socket.emit("join-user", userData);
     };
 
     if (socket.connected) {
-      // if already connected, emit directly
       handleConnect();
     } else {
-      // else, connect and wait for event
       socket.connect();
       socket.once("connect", handleConnect);
     }
 
-   {/*// 🔌 Cleanup on unmount
+    // 🔌 Cleanup on unmount
     // return () => {
     //   if (socket.connected) {
     //     socket.disconnect();
     //     console.log("🔌 Socket disconnected");
     //   }
     // };
-    // 
-    */}
   }, [userData]);
 
   return (
@@ -65,5 +52,5 @@ socketRef.current = io("https://hello-backend-project.onrender.com",{
   );
 };
 
-// 3️⃣ Custom hook to access socket
+// ✅ 3. Custom Hook for Easy Socket Access
 export const useSocket = () => useContext(SocketContext);
