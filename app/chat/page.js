@@ -41,6 +41,7 @@ const ChatPage = () => {
     };
     loadLordIconScript();
   }, []);
+  
 useEffect(() => {
     const handlePopState = () => {
       setSelectedUser(null);
