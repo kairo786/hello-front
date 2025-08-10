@@ -4,19 +4,21 @@ import { Mic, Video, PhoneOff, Camera } from "lucide-react";
 import { useState } from "react";
 import { useSocket } from "@/app/context/SocketContext";
 
-export default function CallControls({ camerastream , data}) {
+export default function CallControls({ camerastream , data ,onCameraToggle}) {
   const [cameraOn, setCameraOn] = useState(true);
   const [micOn, setMicOn] = useState(true);
   const socket = useSocket();
   // ✅ Camera toggle
-  const toggleCamera = () => {
+const toggleCamera = () => {
     const videoTrack = camerastream
       ?.getTracks()
       ?.find((track) => track.kind === "video");
 
     if (videoTrack) {
-      videoTrack.enabled = !videoTrack.enabled;
-      setCameraOn(videoTrack.enabled);
+      const newState = !videoTrack.enabled;
+      videoTrack.enabled = newState;
+      setCameraOn(newState);
+      onCameraToggle(newState); // Call Page को नया स्टेट भेजें
     }
   };
 
@@ -28,6 +30,7 @@ export default function CallControls({ camerastream , data}) {
 
     if (audioTrack) {
       audioTrack.enabled = !audioTrack.enabled;
+      console.log('mic band kia gya')
       setMicOn(audioTrack.enabled);
     }
   };

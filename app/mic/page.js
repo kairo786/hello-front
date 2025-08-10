@@ -1,330 +1,244 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { useSocket } from "../context/SocketContext";
 import { ToastContainer, toast } from 'react-toastify';
 
-
-
-const MICpage = ({micrequest = false ,toid =null}) => {
+const MICpage = ({ micrequest = false, toid = null }) => {
   const recognitionRef = useRef(null);
   const [message, setMessage] = useState("");
-  const [selectedLang, setSelectedLang] = useState("hi-IN");
+  const [selectedLang, setSelectedLang] = useState("ja-JP");
   const [listening, setListening] = useState(false);
   const [show, setShow] = useState(true);
-  const[selectedLanguageName,setSelectedLanguageName] =useState('');
-  // const [toid,settoid] = useState('');
-  // const[micrequest,setmicrequest] = useState(false);
   const socket = useSocket();
+  const isMountedRef = useRef(true); // Track component mount state
+  const restartTimeoutRef = useRef(null); // For tracking restart timeouts
   
-const languages = [
+  const languages = [
+    // 🌏 International
   { code: "en-US", name: "English (US)" },
-  { code: "hi-IN", name: "Hindi (India)" },
-  { code: "te-IN", name: "Telugu (India)" },   
-  { code: "ta-IN", name: "Tamil (India)" },      
+  { code: "en-GB", name: "English (UK)" },
   { code: "fr-FR", name: "French" },
   { code: "es-ES", name: "Spanish" },
   { code: "de-DE", name: "German" },
+  { code: "it-IT", name: "Italian" },
+  { code: "pt-PT", name: "Portuguese (Portugal)" },
+  { code: "pt-BR", name: "Portuguese (Brazil)" },
+  { code: "ru-RU", name: "Russian" },
   { code: "ja-JP", name: "Japanese" },
-];
+  { code: "ko-KR", name: "Korean" },
+  { code: "zh-CN", name: "Chinese (Simplified)" },
+  { code: "zh-TW", name: "Chinese (Traditional)" },
 
-useEffect(() => {
- if(!micrequest){
-  if(recognitionRef){
-    recognitionRef.current = null;
-  console.log('recognisition stopped');
-  }
-}
-}, [micrequest])
+  // 🇮🇳 Indian Regional
+  { code: "hi-IN", name: "Hindi" },
+  { code: "bn-IN", name: "Bengali" },
+  { code: "te-IN", name: "Telugu" },
+  { code: "ta-IN", name: "Tamil" },
+  { code: "ml-IN", name: "Malayalam" },
+  { code: "kn-IN", name: "Kannada" },
+  { code: "gu-IN", name: "Gujarati" },
+  { code: "mr-IN", name: "Marathi" },
+  // { code: "pa-IN", name: "Punjabi" },
+  // { code: "or-IN", name: "Odia" },
+  { code: "ur-IN", name: "Urdu" },
+  // { code: "as-IN", name: "Assamese" }
+  ];
 
-useEffect(() => {
-  console.log("micrequest =",micrequest ," toid :",toid );
-}, [toid ,micrequest]);
+  // Cleanup all resources
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false; // Mark as unmounted
+      stopRecognition();
+      if (restartTimeoutRef.current) {
+        clearTimeout(restartTimeoutRef.current);
+      }
+    };
+  }, []);
 
-  // ✅ Save language to localStorage when it changes
+  // Language change handler
   const handleLanguageChange = (e) => {
     const newLang = e.target.value;
     setSelectedLang(newLang);
     localStorage.setItem("selectedLang", newLang);
-    setShow(false);
+    
+    setTimeout(() => {
+      setShow(false);
+    }, 500);
+    
+    // Restart recognition if active
+    if (listening && micrequest && !recognitionRef.current) {
+      startRecognition();
+      console.log('phle on nhi thi hangle change bala mene ki hai frecognisition start');
+    }
+    else{
+      console.log('recognisition start nhi kia kyuki mic request is :',micrequest);
+    }
   };
+  
+  // Handle micrequest changes
+  useEffect(() => {
+      if (micrequest && !listening) {
+          startRecognition();
+          console.log('recognisition start on first load micrequest changed');
+        } else if (!micrequest && listening) {
+            stopRecognition();
+          }
+        }, [micrequest]);
 
-//   const startRecognition = () => {
-//     if (!("webkitSpeechRecognition" in window)) return;
-//     if (recognitionRef.current) return;
-
-//     const SpeechRecognition = window.webkitSpeechRecognition;
-//     const recognition = new SpeechRecognition();
-//     recognition.continuous = true;
-//     recognition.interimResults = false;
-//     recognition.lang = selectedLang;
-
-//     recognition.onresult = (event) => {
-//       let transcript = "";
-//       for (let i = event.resultIndex; i < event.results.length; i++) {
-//         transcript += event.results[i][0].transcript;
-//       }
-//     //   setMessage((prev) => prev + " " + transcript);
-//     setMessage(transcript);
-//     };
-
-//     recognition.onerror = (event) => {
-//       console.error("Speech recognition error: ", event.error);
-//     };
-
-//     recognition.onend = () => {
-//       if (listening) recognition.start();
-//     };
-
-//     recognitionRef.current = recognition;
-//     recognition.start();
-//     setListening(true);
-//   };
-
-//   const stopRecognition = () => {
-//     if (recognitionRef.current) {
-//       recognitionRef.current.stop();
-//       recognitionRef.current = null;
-//       setListening(false);
-//     }
-//   };
-
-
-const getTranslateCode = (langCode) => langCode?.split('-')[0] || 'en';
-useEffect(() => {
-  if (!socket || !message.trim() || !toid ) return;   // ✅ empty msg emit मत करो
-  const sourceLang = getTranslateCode(selectedLang);
-  socket.emit("sourcetext", { langcode: sourceLang, message ,toid });
-
-}, [message, socket, selectedLang]);
-
-
-
-// ✅ Load saved language from localStorage on first render
+  // Load saved language
   useEffect(() => {
     const savedLang = localStorage.getItem("selectedLang");
     if (savedLang) setSelectedLang(savedLang);
-    if(!listening){
-      startRecognition();
-    }
-  }, []);
+    console.log('localstorage se lang laye :',savedLang);
+  }, [micrequest]);
 
-// useEffect(() => {
-//   if (listening) {
-//     console.log("🌐 Language changed → restarting recognition...");
-//     const langObj = languages.find(lang => lang.code === selectedLang);
-//     setSelectedLanguageName(langObj?.name || "Unknown");
+  const getTranslateCode = (langCode) => langCode?.split('-')[0] || 'en';
+  
+  // Emit translated message
+  useEffect(() => {
+    if (!socket || !message.trim() || !toid) return;
+    const sourceLang = getTranslateCode(selectedLang);
+    socket.emit("sourcetext", { langcode: sourceLang, message, toid });
+  }, [message, socket, selectedLang, toid]);
 
-//     let isRestarting = true;
 
-//     const restartProcess = async () => {
-//       await stopRecognition();
-//       await new Promise(res => setTimeout(res, 800));
-//       if (isRestarting && listening) startRecognition();
-//     };
-
-//     restartProcess();
-//     return () => { isRestarting = false; };
-//   }
-// }, [selectedLang]);
-
-//deepseek code
-useEffect(() => {
-  if (listening && micrequest) {
-    console.log("🌐 Language changed → restarting recognition...");
-    const langObj = languages.find(lang => lang.code === selectedLang);
-    setSelectedLanguageName(langObj?.name || "Unknown");
-
-    // Flag to track if we should proceed with restart
-    let shouldRestart = true;
-
-    const restartProcess = async () => {
-      try {
-        // Stop current recognition and wait for it to fully stop
-        await stopRecognition();
-        
-        // Additional delay to ensure complete shutdown
-        await new Promise(res => setTimeout(res, 1000));
-        
-        // Only restart if no new language change occurred
-        if (shouldRestart && listening) {
-          startRecognition();
-        }
-      } catch (error) {
-        console.warn("Restart error:", error);
-      }
-    };
-
-    restartProcess();
-
-    return () => {
-      // Cancel pending restart if language changes again
-      shouldRestart = false;
-    };
-  }
-}, [selectedLang,micrequest]);
-
-const startRecognition = () => {
-  if (!("webkitSpeechRecognition" in window)) return;
-  if(!micrequest){ 
-    console.log('mic-request is false');
-    return;
-  }
-
-  toast.success('MIC START FOR SEND AUDIO TO TRANSLATE!!')
-  // Clean up previous instance if exists
-  if (recognitionRef.current) {
-    recognitionRef.current.onend = null;
-    recognitionRef.current.onerror = null;
+  function checkLanguageSupport(langCode) {
+  return new Promise((resolve) => {
     try {
-      recognitionRef.current.stop();
-    } catch (e) {}
-  }
-
-  const SpeechRecognition = window.webkitSpeechRecognition;
-  const recognition = new SpeechRecognition();
-  
-  recognition.continuous = true;
-  recognition.interimResults = false;
-  recognition.lang = selectedLang;
-
-//M-2
-  //  recognition.onstart = () => {
-  //   console.log("🎤 User started speaking → TTS paused");
-  //   if (window.speechSynthesis.speaking) {
-  //     window.speechSynthesis.pause();  // ✅ TTS pause
-  //   }
-  // };
-
-  recognition.onresult = (event) => {
-    let transcript = "";
-    for (let i = event.resultIndex; i < event.results.length; i++) {
-      transcript += event.results[i][0].transcript;
-    }
-    setMessage(transcript);
-    console.log("trascript " , transcript);
-  };
-//M-2
-  // recognition.onend = () => {
-  //   console.log("🎤 User stopped speaking → TTS resumed");
-  //   if (window.speechSynthesis.paused) {
-  //     window.speechSynthesis.resume(); // ✅ TTS resume
-  //   }
-  //   if (listening) recognition.start(); // auto restart
-  // };
-
-  recognition.onerror = (event) => {
-    // Ignore "aborted" errors as they're expected during normal operation
-    if (event.error !== "aborted") {
-      console.error("Speech recognition error:", event.error);
-    }
-  };
-
-  recognition.onend = () => {
-    // Only restart if we're still supposed to be listening
-    if (listening) {
-      setTimeout(() => {
-        try {
-          recognition.start();
-        } catch (error) {
-          console.warn("Auto-restart error:", error);
-        }
-      }, 300);
-    }
-  };
-
-  recognitionRef.current = recognition;
-  
-  try {
-    recognition.start();
-    setListening(true);
-  } catch (error) {
-    console.error("Start error:", error);
-    setListening(false);
-  }
-};
-
-
-const stopRecognition = () => {
-  return new Promise(resolve => {
-    if (recognitionRef.current) {
-      // Temporarily remove end handler to prevent auto-restart
-      const originalOnEnd = recognitionRef.current.onend;
-      recognitionRef.current.onend = () => {
-        resolve();
-        if (originalOnEnd) originalOnEnd();
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = langCode;
+      recognition.onstart = () => {
+        recognition.stop();
+        resolve(true); // Supported
       };
-      
-      try {
-        recognitionRef.current.stop();
-      } catch (error) {
-        console.warn("Stop error:", error);
-        resolve();
-      }
-    } else {
-      resolve();
+      recognition.onerror = (event) => {
+        if (event.error === "language-not-supported" || event.error === "bad-grammar") {
+          resolve(false); // Not supported
+        } else {
+          resolve(true); // Some other error but language might still work
+        }
+      };
+      recognition.start();
+    } catch (e) {
+      resolve(false);
     }
   });
-};
-
-//M-1
-// MICpage के अंदर (startRecognition और stopRecognition के बाद ही)
-// useEffect(() => {
-//   // window object पर functions expose करो
-//   window.pauseMic = async () => {
-//     await stopRecognition();
-//     console.log("🚫 MIC block because TTS is speaking...");
-//   };
-
-//   window.resumeMic = async () => {
-//     startRecognition();
-//     console.log("✅ speeaking allowed after TTS finished...");
-//   };
-// }, []);
+}
 
 
+  // Start recognition
+    const startRecognition = async() => {
+    if (!("webkitSpeechRecognition" in window)) return;
+    if (!micrequest || listening) return;
 
-  return (
-    <div className="p-5 pt-0 pl-7 ">
-      {/* pt-0 pl-7 */}
-      {/* <h2 className="text-xl font-bold">🎤 Select Language in which you will speak 🗣️</h2> */}
-      {/* ✅ Language Dropdown */}
-      {show ? (
-        <span>
-          <span>your current speaking launguage : </span>
-          <select
-        value={selectedLang}
-        onChange={handleLanguageChange}
-        className="border p-2 mt-3"
-      >
-        {languages.map((lang) => (
-          <option key={lang.code} value={lang.code}>
-            {lang.name}
-          </option>
-        ))}
-      </select>
-        </span>
-      ) : (
-        <div className="text-2xl text-gray-800 bg-green-200">Speak in {selectedLanguageName} launguage !!</div>
-      )
+    // Clean up previous instance
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {}
+      recognitionRef.current = null;
     }
 
-      {/* <div className="mt-5 flex gap-2">
-        {!listening ? (
-          <button onClick={startRecognition} className="bg-green-500 text-white p-2 rounded">
-            ▶️ Start Listening
-          </button>
-        ) : (
-          <button onClick={stopRecognition} className="bg-red-500 text-white p-2 rounded">
-            ⏹ Stop
-          </button>
-        )}
-      </div> */}
+    const SpeechRecognition = window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    
+    recognition.continuous = true;
+    recognition.interimResults = false;
+    const savedLang = localStorage.getItem("selectedLang");
+    if (savedLang) {
+      recognition.lang = savedLang;
+      console.log('recognisiton lang find',savedLang);
+    }
+    
 
-      {/* <div className="mt-5 bg-blue-400 text-white p-3 text-lg rounded">
-        {message || "Start speaking..."}
-      </div> */}
-      <ToastContainer />
+    recognition.onresult = (event) => {
+      let transcript = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      console.log("script :",transcript);
+      setMessage(transcript);
+    };
+
+    recognition.onerror = (event) => {
+      if (event.error !== "aborted") {
+        console.error("Speech recognition error:", event.error);
+      }
+    };
+
+    recognition.onend = () => {
+      if (listening && micrequest) {
+        setTimeout(() => {
+          try {
+            recognition.start();
+          } catch (error) {
+            console.warn("Auto-restart error:", error);
+          }
+        }, 300);
+      } else {
+        setListening(false);
+      }
+    };
+
+    recognitionRef.current = recognition;
+    
+    try {
+      recognition.start();
+      setListening(true);
+      toast.success('🎤 MIC STARTED - SPEAK NOW');
+    } catch (error) {
+      console.error("Start error:", error);
+      setListening(false);
+    }
+  };
+
+  const stopRecognition = () => {
+    return new Promise(resolve => {
+      if (recognitionRef.current) {
+        const recognition = recognitionRef.current;
+        recognition.onend = () => {
+          setListening(false);
+          resolve();
+        };
+        
+        try {
+          recognition.stop();
+        } catch (error) {
+          console.warn("Stop error:", error);
+          setListening(false);
+          resolve();
+        }
+      } else {
+        resolve();
+      }
+    });
+  };
+
+  return (
+    <div className="p-5 pt-0 pl-7">
+      {show ? (
+        <span>
+          <span>Your current speaking language: </span>
+          <select
+            value={selectedLang}
+            onChange={handleLanguageChange}
+            className="border p-2 mt-3 "
+          >
+            {languages.map((lang) => (
+              <option key={lang.code} value={lang.code} className="bg-sky-200">
+                {lang.name}
+              </option>
+            ))}
+          </select>
+        </span>
+      ) : (
+        <div className="text-2xl text-cyan-800 bg-cyan-200 p-2 rounded border-2 border-black pl-6 font-bold ">
+          Speak in {selectedLang}
+        </div>
+      )}
+      <ToastContainer position="bottom-right" />
     </div>
   );
 };

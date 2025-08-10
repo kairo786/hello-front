@@ -1,3 +1,4 @@
+//chekmic/page.js
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
@@ -142,24 +143,25 @@ const speak = useCallback(() => {
     utterance.voice = selectedVoice;
     utterance.lang = selectedVoice.lang;
   }
-//M-1
+  window.speechSynthesis.cancel();
+// M-1
     // ✅ MIC को pause करो
-//     utterance.onstart = () =>{
-// if (window.pauseMic) window.pauseMic();
-//     }
+    utterance.onstart = () =>{
+if (window.pauseMic) window.pauseMic();
+    }
 
   utterance.pitch = 1;
   utterance.rate = 1;
 //M-1
-  //   utterance.onend = () => {
-  //   // ✅ TTS खत्म होते ही MIC resume
-  //   if (window.resumeMic) window.resumeMic();
-  // };
+    utterance.onend = () => {
+    // ✅ TTS खत्म होते ही MIC resume
+    if (window.resumeMic) window.resumeMic();
+  };
 
 //   utterance.onstart = () => alert("✅ बोलना शुरू");
 //   utterance.onend = () => alert("🏁 बोलना पूरा");
 
-  window.speechSynthesis.cancel();
+
   window.speechSynthesis.speak(utterance);
 }, [translated, voices, selectedVoiceURI]);
 
@@ -195,7 +197,7 @@ useEffect(() => {
         >
           <option value="">-- Select Language --</option>
           {languages.map((lang, idx) => (
-            <option key={idx} value={lang}>{lang}</option>
+            <option key={idx} value={lang}  className='bg-sky-200'>{lang}</option>
           ))}
         </select>
       </div>
@@ -208,11 +210,11 @@ useEffect(() => {
           onChange={(e) => {setSelectedVoiceURI(e.target.value),
             localStorage.setItem('voice1', e.target.value)}
           }
-          className="border p-2 w-full"
+          className="border p-2 w-full "
         >
           <option value="">-- Select Voice --</option>
           {filteredVoices.map((voice, idx) => (
-            <option key={idx} value={voice.voiceURI}>
+            <option key={idx} value={voice.voiceURI} className='bg-sky-200'>
               {voice.name} {voice.default ? "(default)" : ""}
             </option>
           ))}
@@ -220,4 +222,4 @@ useEffect(() => {
       </div>
     </div>
   );
-}
+} 

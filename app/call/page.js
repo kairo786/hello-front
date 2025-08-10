@@ -1,6 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import { useRef, useState, useEffect } from "react";
 import { UserButton } from "@clerk/nextjs";
+import { useUser } from "@clerk/clerk-react";
 import CallControls from "@/components/CallControls";
 import TranslateToSpeech from "../chekmic/page";
 import MICpage from "../mic/page";
@@ -13,7 +16,7 @@ import { useButton } from "@/app/context/buttoncontext";
 import { useSocket } from "../context/SocketContext";
 import { useOffer } from "../context/offercontext";
 import { useRouter } from "next/navigation";
-import * as faceapi from 'face-api.js';
+// import * as faceapi from 'face-api.js';
 
 // Peer Connection Factory with scoped instances
 const PeerConnection = (() => {
@@ -68,88 +71,112 @@ export default function Callpage() {
   const remoteRef = useRef();
   const [tempofer, setTempofer] = useState(false);
   const [localStream, setLocalStream] = useState(null);
+  const [showVideo, setShowVideo] = useState(true);
+  const { user } = useUser();
   const offerHandledRef = useRef(false);
   const route = useRouter();
+  const [swapvideo,setswapvideo] = useState(false);
   const [emoji, setEmoji] = useState('😐');
+  const [selectedlang, setSelectedLang] = useState('😐');
   const [modelsLoaded, setModelsLoaded] = useState(false);
   const [showlang, setShowolang] = useState(false);
   const [showmiclang, setShowmicolang] = useState(false);
   const [micrequest, setmicrequest] = useState(false);
+  const [micrequeaccepted,setmicrequestaccepted] =useState(false);
+  const [showgivemic,setshowgivemic] =useState(false);
+  const [onmicpage,setonmicpage] =useState(true);
+
+  
   const [toid, settoid] = useState('');
   const[isremotemute ,setisremotemute] = useState(false);
 
+  //M-3 In your call page component:
+  // const [ttsStatus, setTtsStatus] = useState({});
   const [listenintranslang, setListenintranslang] = useState(false);
-  const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
+const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
+const [faceapi, setFaceApi] = useState(null);
 
-  const emojiMap = {
-    happy: "😁",
-    sad: "😭",
-    angry: "😡",
-    surprised: "😮",
-    disgusted: "🤢",
-    fearful: "😨",
-    neutral: "😐",
+const emojiMap = {
+  happy: "😁",
+  sad: "😭",
+  angry: "😡",
+  surprised: "😮",
+  disgusted: "🤢",
+  fearful: "😨",
+  neutral: "😐",
+};
+
+// load face api models (browser only)
+useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  let faceapi = null;
+  let mounted = true;
+
+  const load = async () => {
+    try {
+      const fa = await import('@vladmandic/face-api');
+      faceapi = fa;
+      // optional: faceapi.env.setOptions({ ... }) if needed
+      await Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+        faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
+      ]);
+      if (!mounted) return;
+      setModelsLoaded(true);
+      setFaceApi(faceapi);
+      console.log("✅ face-api (vladmandic) models loaded");
+    } catch (err) {
+      console.error("face-api load err", err);
+    }
   };
+  load();
+  return () => { mounted = false; };
+}, []);
 
-  //load face api models
-  useEffect(() => {
-    const loadModels = async () => {
-      try {
-        await Promise.all([
-          faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-          faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
-        ]);
 
-        setModelsLoaded(true);
-        console.log("model loded ");
-      } catch (error) {
-        console.error("Model loading failed:", error);
+// detecting face using loaded faceapi
+useEffect(() => {
+  if (!modelsLoaded || !faceapi) return;
+
+  const detectionOptions = new faceapi.TinyFaceDetectorOptions({
+    inputSize: 320,
+    scoreThreshold: 0.2,
+  });
+
+  const interval = setInterval(async () => {
+    if (!localRef.current || localRef.current.readyState < 4) return;
+
+    try {
+      const result = await faceapi
+        .detectSingleFace(localRef.current, detectionOptions)
+        .withFaceExpressions();
+
+      if (result?.expressions) {
+        const boosted = {
+          angry: result.expressions.angry * 1.5,
+          happy: result.expressions.happy * 1.3,
+          surprised: result.expressions.surprised * 1.4,
+          neutral: result.expressions.neutral * 0.7,
+          sad: result.expressions.sad,
+          disgusted: result.expressions.disgusted,
+          fearful: result.expressions.fearful,
+        };
+
+        const maxEmotion = Object.keys(boosted).reduce((a, b) =>
+          boosted[a] > boosted[b] ? a : b
+        );
+
+        setEmoji(emojiMap[maxEmotion]);
       }
-    };
-    loadModels();
-  }, []);
-  //detecting face using model
-  useEffect(() => {
-    if (!modelsLoaded) return;
+    } catch (err) {
+      console.error("Detection error:", err);
+    }
+  }, 300);
 
-    const detectionOptions = new faceapi.TinyFaceDetectorOptions({
-      inputSize: 320,       // Faster processing
-      scoreThreshold: 0.2   // More sensitive detection
-    });
+  return () => clearInterval(interval);
+}, [emojiMap, modelsLoaded, faceapi]);
 
-    const interval = setInterval(async () => {
-      if (!localRef.current || localRef.current.readyState < 4) return;
-
-      try {
-        const result = await faceapi
-          .detectSingleFace(localRef.current, detectionOptions)
-          .withFaceExpressions();
-
-        if (result?.expressions) {
-          // Boost expression sensitivity
-          const boosted = {
-            angry: result.expressions.angry * 1.5,
-            happy: result.expressions.happy * 1.3,
-            surprised: result.expressions.surprised * 1.4,
-            neutral: result.expressions.neutral * 0.7,
-            sad: result.expressions.sad,
-            disgusted: result.expressions.disgusted,
-            fearful: result.expressions.fearful
-          };
-
-          const maxEmotion = Object.keys(boosted).reduce((a, b) =>
-            boosted[a] > boosted[b] ? a : b
-          );
-
-          setEmoji(emojiMap[maxEmotion]);
-        }
-      } catch (err) {
-        console.error("Detection error:", err);
-      }
-    }, 300); // Faster checking interval
-
-    return () => clearInterval(interval);
-  }, [emojiMap, modelsLoaded]);
 
   // Load lord-icon script
   useEffect(() => {
@@ -167,6 +194,12 @@ export default function Callpage() {
   }, [socket?.id]);
 
 
+useEffect(() => {
+const savedLang = localStorage.getItem("selectedLang");
+    if (savedLang) {setSelectedLang(savedLang)};
+}, [showlang])
+
+
   useEffect(() => {
     if (!socket) return;
     socket.on("connect", () => console.log("✅ Socket connected:", socket.id));
@@ -176,6 +209,10 @@ export default function Callpage() {
       socket.off("disconnect");
     };
   }, [socket]);
+
+   const handleCameraToggle = (isCameraOn) => {
+    setShowVideo(isCameraOn);
+  };
 
   //get user media
   useEffect(() => {
@@ -325,7 +362,7 @@ export default function Callpage() {
   }, [incomingOffer, localStream]);
 
 
-  const [isSwapped, setIsSwapped] = useState(false);
+
   const [size, setSize] = useState({ width: 220, height: 150 });
   const [resizingEdge, setResizingEdge] = useState(null);
 
@@ -356,9 +393,10 @@ export default function Callpage() {
     window.addEventListener("mouseup", stopDrag);
   };
 
-  const handleSwap = () => {
-    if (!resizingEdge) setIsSwapped((prev) => !prev);
-  };
+const handleSwap = () => {
+  setswapvideo((prev) => !prev);
+  console.log("video swapped swapvideo is ", !swapvideo);
+}
 
   useEffect(() => {
     if (callState.clicked) {
@@ -368,11 +406,12 @@ export default function Callpage() {
     }
   }, [incomingOffer, callState])
 
-
+  
+  
   const handletransconfirm = () => {
     setListenintranslang(true);
     setShowolang(false);
-
+    
     if (socket && toid) {
       socket.emit("translatelang-request", toid);
       console.log("todata :", toid);
@@ -381,6 +420,28 @@ export default function Callpage() {
       console.log('no toid data ', toid);
     }
   };
+  
+// M-3 Socket handler for TTS status
+  
+// useEffect(() => {
+//   if (!socket) return;
+//   const handleTtsStarted = (data) => {
+//     console.log('TTS status started for:', data.toid);
+//     setTtsStatus(prev => ({...prev, [data.toid]: true}));
+//   };
+//   const handleTtsEnded = (data) => {
+//     console.log('TTS status ended for:', data.toid);
+//     setTtsStatus(prev => ({...prev, [data.toid]: false}));
+//   };
+
+//   socket.on("tts-started", handleTtsStarted);
+//   socket.on("tts-ended", handleTtsEnded);
+
+//   return () => {
+//     socket.off("tts-started", handleTtsStarted);
+//     socket.off("tts-ended", handleTtsEnded);
+//   };
+// }, [socket]);
 
 
   // listening translate-lang request
@@ -401,6 +462,7 @@ export default function Callpage() {
     );
    socket.on("mic-request-accepted",()=>{
     setisremotemute(true);
+    setmicrequestaccepted(true);
     if(!listenintranslang){
       setListenintranslang(true);
     }
@@ -411,6 +473,7 @@ export default function Callpage() {
     socket.on("mic-request-stopped",()=>{
       setisremotemute(false);
       setListenintranslang(false);
+      setmicrequestaccepted(false);
       console.log('remote video on 📖');
     toast('mic-request-stopped ', {
   icon: '🚫',
@@ -420,21 +483,30 @@ export default function Callpage() {
    socket.on("cancle-mic",()=>{
     console.log('friend want original material');
     setmicrequest(false);
+    setshowgivemic(false);
     setShowmicolang(false);
  window.confirm('friend want original material');
  socket.emit("mic-request-stopped",toid);
    });
+
+
+socket.on("give-mic",()=>{
+   toast.success('mic 🎤 received');
+   setonmicpage(false);
+   setTimeout(() => {
+    setonmicpage(true)
+    setshowgivemic(true);
+   }, 100);
+})
+
     return () => {
       socket.off("translatelang-request");
       socket.off("mic-request-accepted") ;
       socket.off("cancle-mic");
+      socket.off("give-mic");
     };
   }, [socket,showmiclang]);
 
-// useEffect(() => {
-// setShowmicolang(!showmiclang);
-// setShowmicolang(!showmiclang);
-// }, [micrequest, showmiclang])
 
   const handleLanguageClick = () => {
     console.log('Language icon clicked'); // Debug log
@@ -545,7 +617,7 @@ export default function Callpage() {
             </div>
 
             {/* Content */}
-            <div className="flex flex-col">
+                    <div className="flex flex-col">
               <motion.div
                 initial={{ scale: 0.95 }}
                 animate={{
@@ -556,7 +628,10 @@ export default function Callpage() {
               >
                 <span className="font-semibold">Select your spoken launguage</span>
                 <button
-                  onClick={() => { setShowmicolang(!showmiclang) 
+                  onClick={() => { setShowmicolang(!showmiclang)
+                    if(isremotemute){
+                      setshowgivemic(true);
+                    }
                     if(micrequest && socket){
                       if(showmiclang){
                         socket.emit("mic-request-stopped",toid);}
@@ -565,7 +640,7 @@ export default function Callpage() {
                   }}
                   className="relative text-[#16c79e] border-2 border-black rounded px-1 mt-3 inline cursor-pointer text-lg font-bold before:bg-teal-600 hover:rounded-b-none before:absolute before:-bottom-0 before:-left-0  before:block before:h-[2px] before:w-full before:origin-bottom-right before:scale-x-0 before:transition before:duration-300 before:ease-in-out hover:before:origin-bottom-left hover:before:scale-x-100">
                   {!showmiclang && <span> SHOW LANG</span>}
-                  {showmiclang && <span className="text-red-400">STOP LANG</span>}
+                  {showmiclang && <span className="text-red-500">STOP LANG</span>}
                 </button>
               </motion.div>
               {showmiclang && <MICpage micrequest={false} toid={toid} />}
@@ -585,7 +660,7 @@ export default function Callpage() {
                 whileTap={{ scale: 0.98 }}
                 className={`px-4 py-2 ${!listenintranslang ? 'text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2bg-blue-600 hover:bg-blue-700' : 'text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-1 mr-4'}  rounded-lg transition-colors`}
               >
-                {!listenintranslang && <div onClick={handletransconfirm}>Confirm</div>}
+                 {!listenintranslang && <div onClick={handletransconfirm}>Confirm</div>}
                 {listenintranslang && <div onClick={() => { setListenintranslang(false) , setShowolang(false)
                   if(socket){
                     socket.emit("cancle-mic",toid);
@@ -602,19 +677,21 @@ export default function Callpage() {
       {/* local and remote video    */}
       <div className="relative p-4 flex flex-col w-full h-full">
 
-        {!showlang && showmiclang && (
+     {/* Listening animation with lower z-index */}
+         {!showlang && showmiclang && (
   <>
   <span><ToastContainer/></span>
     {/* MICpage with higher z-index and proper positioning */}
+    {onmicpage && 
     <MICpage 
       micrequest={micrequest} 
       toid={toid} 
       className="absolute top-52 right-10 z-20"
     />
+    }
     
-    {/* Listening animation with lower z-index */}
-    <span className="absolute top-20 right-17 z-[50] text-orange-400 text-2xl flex items-center">
-      <span>Listening</span>
+    <span className="absolute top-20 right-8 z-[50] text-orange-400 text-2xl flex items-center">
+      <span>{selectedlang} Listening</span>
       <DotLottieReact
         src="https://lottie.host/85c325c0-c43f-468d-b113-0ea58002cecb/ElMgfLaPbF.lottie"
         loop
@@ -642,18 +719,66 @@ export default function Callpage() {
 
         )}
 
-        <motion.video
+      {/* show give-mic */}
+      {micrequest && micrequeaccepted && showgivemic &&
+          <span className="absolute top-120 right-17 z-[50] text-2xl ">
+      <DotLottieReact
+        src="https://lottie.host/85109f00-b8e9-4906-906f-08ab53a24640/1WHg00htly.lottie"
+        loop
+        onClick={()=>{
+                socket.emit("give-mic",toid);
+                setshowgivemic(false);
+              }}
+        autoplay
+        className="w-12 h-12 ml-2"
+        title="Give mic"
+      />
+    </span>}
+
+
+        {/* {showVideo ? ( */}
+        {/* <motion.video
           ref={localRef}
-          autoPlay
           muted
+          autoPlay
           playsInline
-          onClick={handleSwap}
+          onDoubleClick={handleSwap}
           style={{ borderRadius: 10, border: "2px solid #333" }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
           className="absolute inset-0 w-full h-full object-cover cursor-pointer z-0"
-        />
+        /> */}
+
+
+         {/* Local video */}
+  <motion.video
+  ref={remoteRef}
+      muted={isremotemute}
+    autoPlay
+    playsInline
+    onDoubleClick={handleSwap}
+    style={{ borderRadius: 10, border: "2px solid #333" }}
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ duration: 0.3 }}
+    className={`absolute object-cover cursor-pointer
+      ${swapvideo
+        ? "top-20 left-8 z-10" // chhoti position
+        : "inset-0 w-full h-full z-0"}  
+    `}
+    width={swapvideo ? size.width : undefined}
+    height={swapvideo ? size.height : undefined}
+  />
+
+
+      {/* // ) : (
+      //   <img  */}
+      {/* //     src={user?.imageUrl} 
+      //     alt="Profile" 
+      //     className="h-full w-full object-cover rounded-lg"
+      //   />
+      // )} */}
 
         {emoji && (
           <div
@@ -677,18 +802,18 @@ export default function Callpage() {
       </div>
 
       {/* remote video pulling */}
-      <motion.div
+      {/* <motion.div
         className="absolute top-20 left-8 z-10 rounded-lg border-2 border-white overflow-hidden group"
         style={{ width: size.width, height: size.height }}
-        onClick={handleSwap}
+        onDoubleClick={handleSwap}
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
       >
         <video
           ref={remoteRef}
-          autoPlay
           muted={isremotemute}
+          autoPlay
           playsInline
           className="w-full h-full object-cover"
           style={{ borderRadius: 10, border: "2px solid #333" }}
@@ -697,15 +822,65 @@ export default function Callpage() {
         <div onMouseDown={(e) => startResize("left", e)} className="absolute top-0 left-0 w-2 h-full cursor-ew-resize z-20" />
         <div onMouseDown={(e) => startResize("bottom", e)} className="absolute bottom-0 left-0 h-2 w-full cursor-ns-resize z-20" />
         <div onMouseDown={(e) => startResize("top", e)} className="absolute top-0 left-0 h-2 w-full cursor-ns-resize z-20" />
-      </motion.div>
+      </motion.div> */}
+
+
+      {/* Remote video */}
+  <motion.div
+    className={`
+      absolute rounded-lg border-2 border-white overflow-hidden group
+      ${swapvideo
+        ? "inset-0 w-full h-full z-0" // bada video
+        : "top-20 left-8 z-10"} // chhoti position
+    `}
+    style={{
+      width: !swapvideo ? size.width : undefined,
+      height: !swapvideo ? size.height : undefined
+    }}
+    onDoubleClick={handleSwap}
+    initial={{ opacity: 0, scale: 0.9 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ duration: 0.3 }}
+  >
+    <video
+      ref={localRef}
+      muted
+      autoPlay
+      playsInline
+      className="w-full h-full object-cover"
+      style={{ borderRadius: 10, border: "2px solid #333" }}
+    />
+
+    {/* Resize handles sirf chhoti video par */}
+    {!swapvideo && (
+      <>
+        <div
+          onMouseDown={(e) => startResize("right", e)}
+          className="absolute top-0 right-0 w-2 h-full cursor-ew-resize z-20"
+        />
+        <div
+          onMouseDown={(e) => startResize("left", e)}
+          className="absolute top-0 left-0 w-2 h-full cursor-ew-resize z-20"
+        />
+        <div
+          onMouseDown={(e) => startResize("bottom", e)}
+          className="absolute bottom-0 left-0 h-2 w-full cursor-ns-resize z-20"
+        />
+        <div
+          onMouseDown={(e) => startResize("top", e)}
+          className="absolute top-0 left-0 h-2 w-full cursor-ns-resize z-20"
+        />
+      </>
+    )}
+  </motion.div>
 
       {tempofer && <div className="absolute bottom-2 w-full z-10">
-        <CallControls camerastream={localStream} data={callState.to} />
+        <CallControls camerastream={localStream} data={callState.to} onCameraToggle={handleCameraToggle} />
       </div>
       }
       {incomingOffer &&
         <div className="absolute bottom-2 w-full z-10">
-          <CallControls camerastream={localStream} data={incomingOffer.from} />
+          <CallControls camerastream={localStream} data={incomingOffer.from} onCameraToggle={handleCameraToggle}/>
         </div>
       }
     </div>
