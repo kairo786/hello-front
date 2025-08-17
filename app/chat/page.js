@@ -11,6 +11,7 @@ import Spline from '@splinetool/react-spline/next';
 import { useButton } from "../context/buttoncontext";
 import { useOffer } from "../context/offercontext";
 import { useSocket } from "../context/SocketContext";
+import Openchat from "../openchat/page";
 import CallUIPage from "@/components/callui";
 
 const roboto = Roboto({
@@ -94,26 +95,11 @@ useEffect(() => {
   // Handle incoming offers
  useEffect(() => {
   if (!socket || !user?.fullName || !user?.imageUrl) return;
-
   const offerHandler = ({ from, to, offer }) => {
     socket.emit("request-user-list");
-    // setRole("receiver");
     setIncomingOffer({ from, to, offer });
-    // alert("offer received");
     console.log("📞 Offer received from:", from);
-  
-    // const handleCallAnswered = () => {
       route.push("/call");
-    // };
-    // socket.on("call-answered", handleCallAnswered);
-
-    // Set a timeout of 60 seconds to remove listener
-    // const timeoutId = setTimeout(() => {
-    //   socket.off("call-answered", handleCallAnswered);
-    //   // socket.emit("not-answered",from);
-    //   setRole("");
-    //   console.log("⏰ Call-answered listener removed after 60 sec");
-    // }, 60000);
   };
 
   socket.on("offer", offerHandler);
@@ -123,20 +109,6 @@ useEffect(() => {
   };
 }, [socket, user?.fullName, user?.imageUrl, setIncomingOffer, route]);
 
-// useEffect(() => {
-// if(!socket) return ;
-// const handlecall = (callto) => {
-//   setcallto(callto);
-//   setRole("receiver");
-// }
-// socket.on("calling",handlecall)
-//  const timeoutId = setTimeout(() => {
-//       socket.off("calling",handlecall)
-//       socket.emit("not-answered",callto.from);
-//       setRole("");
-//       console.log("⏰ Call-answered listener removed after 60 sec");
-//     }, 60000);
-// }, [socket ,callto])
 useEffect(() => {
   if (!socket) return;
 
@@ -310,9 +282,10 @@ useEffect(() => {
       {/* RIGHT CHAT PANEL */}
       <div className="flex-1 bg-cover bg-center relative md:min-w-3/4">
         {selectedUser ? (
-          <div className="h-full flex flex-col justify-center items-center text-center">
-            <h1 className="text-3xl font-bold mb-3">{users[selectedUser].username}</h1>
-            <p className="text-gray-300 text-sm">Chat will appear here.</p>
+          <div className="h-full w-full flex flex-col justify-center items-center text-center">
+            {/* <h1 className="text-3xl font-bold mb-3">{users[selectedUser].username}</h1>
+            <p className="text-gray-300 text-sm">Chat will appear here.</p> */}
+            <Openchat className ='w-full' senderEmail={users[socket.id]?.email} receiverEmail = {users[selectedUser]?.email} receiversocketid={selectedUser} receiverimg={users[selectedUser]?.imgurl} receivername={users[selectedUser]?.username}/>
           </div>
         ) : (
           <div className="h-full flex justify-center items-center relative overflow-hidden ml-0">

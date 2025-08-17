@@ -595,7 +595,7 @@ socket.on("give-mic",()=>{
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ type: "spring", damping: 20, stiffness: 300 }}
-            className="absolute z-50 top-16 right-4 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden"
+            className="absolute z-60 top-16 right-4 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden"
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-3 flex justify-between items-center">
@@ -690,7 +690,7 @@ socket.on("give-mic",()=>{
     />
     }
     
-    <span className="absolute top-20 right-8 z-[50] text-orange-400 text-2xl flex items-center">
+    <span className="absolute top-20 md:right-10 right-2 z-[10] text-orange-400 text-sm md:text-2xl flex items-center ">
       <span>{selectedlang} Listening</span>
       <DotLottieReact
         src="https://lottie.host/85c325c0-c43f-468d-b113-0ea58002cecb/ElMgfLaPbF.lottie"
@@ -707,7 +707,7 @@ socket.on("give-mic",()=>{
         {/* translating animation */}
         {isremotemute && (
 
-          <span className="absolute top-25 right-10 z-10 text-cyan-300 text-2xl dark:text-cyan-200 font-medium flex flex-row items-center ">
+          <span className="absolute top-25 md:right-10 right-2 z-10 text-cyan-300 text-sm md:text-2xl dark:text-cyan-200 font-medium flex flex-row items-center ">
             <span>Translating</span>
             <DotLottieReact
               src="https://lottie.host/20edb9ee-c915-47aa-9234-d6fbb3fa43dd/gubUz3v5LG.lottie"
@@ -721,7 +721,7 @@ socket.on("give-mic",()=>{
 
       {/* show give-mic */}
       {micrequest && micrequeaccepted && showgivemic &&
-          <span className="absolute top-120 right-17 z-[50] text-2xl ">
+          <span className="absolute top-120 md:right-16 z-[50] text-2xl right-10">
       <DotLottieReact
         src="https://lottie.host/85109f00-b8e9-4906-906f-08ab53a24640/1WHg00htly.lottie"
         loop
@@ -734,22 +734,6 @@ socket.on("give-mic",()=>{
         title="Give mic"
       />
     </span>}
-
-
-        {/* {showVideo ? ( */}
-        {/* <motion.video
-          ref={localRef}
-          muted
-          autoPlay
-          playsInline
-          onDoubleClick={handleSwap}
-          style={{ borderRadius: 10, border: "2px solid #333" }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          className="absolute inset-0 w-full h-full object-cover cursor-pointer z-0"
-        /> */}
-
 
          {/* Local video */}
   <motion.video
@@ -800,29 +784,6 @@ socket.on("give-mic",()=>{
         )}
 
       </div>
-
-      {/* remote video pulling */}
-      {/* <motion.div
-        className="absolute top-20 left-8 z-10 rounded-lg border-2 border-white overflow-hidden group"
-        style={{ width: size.width, height: size.height }}
-        onDoubleClick={handleSwap}
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        <video
-          ref={remoteRef}
-          muted={isremotemute}
-          autoPlay
-          playsInline
-          className="w-full h-full object-cover"
-          style={{ borderRadius: 10, border: "2px solid #333" }}
-        />
-        <div onMouseDown={(e) => startResize("right", e)} className="absolute top-0 right-0 w-2 h-full cursor-ew-resize z-20" />
-        <div onMouseDown={(e) => startResize("left", e)} className="absolute top-0 left-0 w-2 h-full cursor-ew-resize z-20" />
-        <div onMouseDown={(e) => startResize("bottom", e)} className="absolute bottom-0 left-0 h-2 w-full cursor-ns-resize z-20" />
-        <div onMouseDown={(e) => startResize("top", e)} className="absolute top-0 left-0 h-2 w-full cursor-ns-resize z-20" />
-      </motion.div> */}
 
 
       {/* Remote video */}

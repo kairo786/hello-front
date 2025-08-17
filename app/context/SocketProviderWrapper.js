@@ -10,7 +10,7 @@ export default function SocketProviderWrapper({ children }) {
   }
 
   if (user?.fullName && user?.imageUrl) {
-    const userData = { username: user.fullName, imgurl: user.imageUrl };
+    const userData = { username: user.fullName, imgurl: user.imageUrl ,email :user.primaryEmailAddress.emailAddress};
     return <SocketProvider userData={userData}>{children}</SocketProvider>;
   }
 
