@@ -54,7 +54,7 @@ const Openchat = ({ senderEmail, receiverEmail, receiversocketid ,receiverimg,re
       return;
     }
 
-    fetch(`http://localhost:3001/get-messages?sender=${senderEmail}&receiver=${receiverEmail}`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/get-messages?sender=${senderEmail}&receiver=${receiverEmail}`)
       .then(res => res.json())
       .then(data => {
         setCurrentChat(data.messages); // state में messages save
@@ -143,7 +143,7 @@ const Openchat = ({ senderEmail, receiverEmail, receiversocketid ,receiverimg,re
  
    if(a){ toast('👍 msg deleted')
     // Delete message
-    fetch("http://localhost:3001/delete-message", {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/delete-message`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -166,7 +166,7 @@ const Openchat = ({ senderEmail, receiverEmail, receiversocketid ,receiverimg,re
     const newtext = prompt("Enter new message :");
     // Edit message
     // console.log(msgid);
-    fetch("http://localhost:3001/edit-message", {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/edit-message`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

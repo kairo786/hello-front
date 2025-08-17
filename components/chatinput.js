@@ -37,7 +37,7 @@ const ChatInput = ({ senderemail, receiveremail ,handleopenchat ,receiversocketi
     if (message.trim()) {
       // Send message logic
       console.log('Message sent:', message);
-      fetch("http://localhost:3001/send-message", {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/send-message`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
