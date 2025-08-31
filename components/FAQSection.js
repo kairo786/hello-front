@@ -3,7 +3,7 @@ import { useState } from "react";
 
 const faqs = [
   { q: "Is Hello free to use?", a: "Yes, it's completely free with no hidden charges." },
-  { q: "Can I video chat without signing up?", a: "Absolutely, just click and start!" },
+  { q: "Can I video chat without signing up?", a: "Absolutely, no go and sign in/up!" },
   { q: "Is it secure?", a: "Yes, we use encrypted connections for safety." },
 ];
 
