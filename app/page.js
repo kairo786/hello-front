@@ -7,13 +7,14 @@ import FAQSection from "../components/FAQSection";
 import Footer from "../components/Footer";
 import Slider from "@/components/slider";
 import Navbar from "@/components/Navbar";
+import GoogleAd from "@/components/adcomponet";
 export default function Home() {
   const router = useRouter();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-100 to-blue-100 text-black">
       {/*Header */}
-     < Navbar/>
+      < Navbar />
 
       {/*middle */}
 
@@ -25,8 +26,9 @@ export default function Home() {
           playsInline
           className="absolute top-0 left-0 w-full h-full object-cover blur-md z-0"
         >
-          <source src="\images\guestures.mp4" type="video/mp4" />
+          <source src="/guestures.mp4" type="video/mp4" />
         </video>
+
         <Slider className='relative z-10 rounded-md' />
       </div>
 
@@ -46,6 +48,7 @@ export default function Home() {
         >
           Start Chatting Now
         </button>
+        <GoogleAd slot="1234567890" />
       </motion.section>
 
       <FeatureSection />

@@ -1,7 +1,8 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
-import { UserButton } from "@clerk/nextjs";
+import { useUser ,UserButton ,SignInButton} from "@clerk/nextjs";
+
 import Link from "next/link";
 import Image from "next/image";
 
@@ -9,18 +10,32 @@ const links = [
   { name: "Home", href: "/" },
   { name: "Chat", href: "/chat" },
   { name: "About", href: "/about" },
+  { name: "Contact", href: "/contact" },
+  
 ];
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const { isLoaded, isSignedIn, user } = useUser();
 
   // Optional: Sync with system preference
+  // Check system preference on mount
   useEffect(() => {
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
       setDarkMode(true);
+      document.documentElement.classList.add("dark");
     }
   }, []);
+
+  // Toggle dark mode when state changes
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [darkMode]);
 
   return (
     <nav className={`w-full h-20 z-50 bg-white/70 dark:bg-gray-900/80 backdrop-blur shadow-md px-6 py-4 transition-colors duration-300`}>
@@ -57,7 +72,9 @@ export default function Navbar() {
           >
             {darkMode ? '☀️' : '🌙'}
           </button>
-          <UserButton appearance={{ variables: { colorPrimary: darkMode ? '#4ade80' : '#166534' }}} />
+          {isSignedIn && <UserButton appearance={{ variables: { colorPrimary: darkMode ? '#4ade80' : '#166534' }}} />}
+          {!isSignedIn && <span className="text-orange-500 rounded-3xl flex flex-row items-center border-2 border-green-500 p-1 gap-2 px-2 bg-green-200"> 
+          <img src="https://pngimg.com/uploads/google/google_PNG19630.png" alt="google-img" className="w-7 h-7"/><SignInButton/></span>}
         </div>
 
         {/* Mobile Toggle */}

@@ -7,6 +7,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ButtonProvider } from "./context/buttoncontext";
 import { OfferProvider } from "./context/offercontext";
 import SocketProviderWrapper from "./context/SocketProviderWrapper";
+import ClientScripts from "@/components/clientscript";
 
 export const metadata = {
   title: "Hello",
@@ -28,17 +29,18 @@ export default function RootLayout({ children }) {
   allowedRedirectOrigins={['https://hello-front-or8v-git-main-ankit-keros-projects.vercel.app']}>
       <html lang="en">
         <head>
-          <Script
-            src="https://cdn.lordicon.com/lordicon.js"
-            strategy="beforeInteractive"
-          />
-        </head>
+      </head>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
+          
           <OfferProvider>
             <ButtonProvider>
-              <SocketProviderWrapper>{children}</SocketProviderWrapper>
+              <SocketProviderWrapper>
+                <ClientScripts/>
+                {children}
+                
+            </SocketProviderWrapper>
             </ButtonProvider>
           </OfferProvider>
         </body>

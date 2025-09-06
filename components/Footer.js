@@ -15,7 +15,7 @@ export default function Footer() {
           <div className="flex gap-4 mt-2">
             <a href="/about" className="hover:text-green-300">About</a>
             <a href="#" className="hover:text-green-300">Terms</a>
-            <a href="#" className="hover:text-green-300">Privacy</a>
+            <a href="/privacy-policy.html" className="hover:text-green-300">Privacy</a>
           </div>
         </div>
         <div className="text-sm text-gray-400 mt-4 md:mt-0">© 2025 Hello Inc.</div>
