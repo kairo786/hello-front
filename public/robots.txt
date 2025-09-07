@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hello-front-or8v.vercel.app/sitemap.xml

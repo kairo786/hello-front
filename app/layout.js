@@ -29,6 +29,12 @@ export default function RootLayout({ children }) {
   allowedRedirectOrigins={['https://hello-front-or8v-git-main-ankit-keros-projects.vercel.app']}>
       <html lang="en">
         <head>
+          <Script
+          id="adsense"
+          strategy="afterInteractive"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7982479296670505"
+          crossOrigin="anonymous"
+        />
       </head>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}

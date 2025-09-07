@@ -48,7 +48,6 @@ export default function Home() {
         >
           Start Chatting Now
         </button>
-        <GoogleAd slot="1234567890" />
       </motion.section>
 
       <FeatureSection />

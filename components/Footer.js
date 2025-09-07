@@ -1,6 +1,8 @@
+import GoogleAd from "./adcomponet";
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-white py-10 px-6 md:px-20">
+      <GoogleAd slot="6300978111" />
       <div className="flex flex-col md:flex-row justify-between items-center gap-6">
         <div>
           <h3 className="text-xl font-bold">Follow us</h3>
