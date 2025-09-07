@@ -49,13 +49,13 @@ export default function GoogleAd({ slot }) {
     }
 
     return () => ro?.disconnect();
-  }, []);
+  }, [slot]);
 
   return (
     <ins
       ref={ref}
       className="adsbygoogle"
-      style={{ display: "block", minHeight: "50px" }}
+      style={{ display: "block", minHeight: "50px", textAlign: "center" }}
       data-ad-client="ca-pub-7982479296670505"
       // data-ad-client="ca-pub-3940256099942544"
       data-ad-slot={slot}

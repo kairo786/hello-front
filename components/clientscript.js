@@ -24,13 +24,13 @@ export default function ClientScripts() {
         onLoad={() => console.log("✅ Lordicon script loaded")}
       />
 
-      <Script
+      {/* <Script
         async
         src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7982479296670505"
         crossOrigin="anonymous"
         strategy="afterInteractive"
         onLoad={() => console.log("✅ Google Ads script loaded")}
-      />
+      /> */}
     </>
   );
 }
