@@ -14,7 +14,8 @@ It’s not just a communication app – it’s built to be **fun, interactive, a
 - 💬 **Direct Messaging (DMs)** – Instant chat with friends  
 - 🌍 **Multi-Language Support** – Choose your favorite language during a call  
 - 🤖 **Smart Chatbot** – Guides you, answers FAQs, adds humor 😅  
-- 🔒 **Privacy & Security** – Encrypted chats and calls  
+- 🔒 **Privacy & Security** – Encrypted chats and calls
+- **And many more** 
 
 ---
 
@@ -34,7 +35,6 @@ Whether it’s chatting with friends, making video calls, or trying out fun AI f
 
 👤 **Ankit Kumar (Kero)**  
 - 🎓 Student at **IIT Patna** (ECE + M.Tech in Communication)  
-- 🏏 Loves **Cricket**, 🎭 enjoys making **Comedy & Educational content**  
 - 💡 Passionate about **Tech, Core Electronics, and Web Development**  
 - 💙 Motto: *Keep building, keep connecting!*  
 
