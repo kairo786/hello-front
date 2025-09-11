@@ -1,5 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import FeatureSection from "../components/FeatureSection";
@@ -8,9 +9,10 @@ import Footer from "../components/Footer";
 import Slider from "@/components/slider";
 import Navbar from "@/components/Navbar";
 import GoogleAd from "@/components/adcomponet";
+import Chatbot from "@/components/chatbot";
 export default function Home() {
   const router = useRouter();
-
+  const [openbot ,setopenbot] = useState(false);
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-100 to-blue-100 text-black">
       {/*Header */}
@@ -49,6 +51,14 @@ export default function Home() {
           Start Chatting Now
         </button>
       </motion.section>
+
+     <div
+      className={`fixed bottom-20 right-6 z-50 text-white shadow-lg transition ${!openbot ? "rounded-full" : ""}`}
+    >
+     {!openbot && <img  onClick={()=>{setopenbot(true)}}  src="/robot.gif" alt="robot" className="w-30 h-30 "/>}
+     {openbot && <span className="flex flex-col gap-1 mb-0 "><Chatbot /> <span onClick={()=>{setopenbot(false)}} className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-bold rounded-lg text-sm  py-2.5 text-center me-2 mb-2 mr-24  mx-24">Close bot</span></span>}
+    </div>
+
 
       <FeatureSection />
       <FAQSection />

@@ -35,14 +35,6 @@ export const SocketProvider = ({ children, userData }) => {
       socket.connect();
       socket.once("connect", handleConnect);
     }
-
-    // 🔌 Cleanup on unmount
-    // return () => {
-    //   if (socket.connected) {
-    //     socket.disconnect();
-    //     console.log("🔌 Socket disconnected");
-    //   }
-    // };
   }, [userData]);
 
   return (
