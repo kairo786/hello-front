@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Hello-Front
 
-## Getting Started
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)  
+[![Next.js](https://img.shields.io/badge/Framework-Next.js-13-blue)](https://nextjs.org/)  
+[![Tailwind CSS](https://img.shields.io/badge/Styling-TailwindCSS-green)](https://tailwindcss.com/)  
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✅ Table of Contents
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- [About the Project](#about-the-project)  
+- [Features](#features)  
+- [Tech Stack](#tech-stack)  
+- [Getting Started](#getting-started)  
+- [Scripts](#scripts)  
+- [Deployment](#deployment)  
+- [Folder Structure](#folder-structure)  
+- [Contributing](#contributing)  
+- [License](#license)  
+- [Contact](#contact)  
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🔍 About the Project
 
-## Learn More
+“Hello-Front” is a frontend application built with **Next.js**. It serves as the UI part of a chat system, providing a clean and responsive interface for users to send and receive messages.  
 
-To learn more about Next.js, take a look at the following resources:
+Key goals:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Fast and interactive chat UI  
+- Clean design using Tailwind CSS  
+- Scalable components so it's easy to maintain and add more features  
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## ✨ Features
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Real-time chat interface (placeholder for future WebSocket or polling integration)  
+- Responsive layout for mobile and desktop  
+- Animated “thinking” / typing indicator while waiting for bot responses  
+- Auto scroll so the view stays at bottom when new messages arrive  
+- Easy to theme / customize  
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🛠 Tech Stack
+
+| Component        | Technology                                |
+|------------------|--------------------------------------------|
+| Framework        | Next.js (App Router)                      |
+| Styling          | Tailwind CSS, PostCSS                     |
+| Linting / Formatting | ESLint, Prettier, JSConfig         |
+| Deployment       | Vercel (suggested)                        |
+| Language         | JavaScript                                |
+
+---
+
+## 🚀 Getting Started
+
+Ye instructions follow karo local me run karne ke liye:
