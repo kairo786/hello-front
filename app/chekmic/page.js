@@ -6,12 +6,12 @@ import React, { useEffect, useState,useCallback } from 'react';
 import { useSocket } from "../context/SocketContext";
 // import { pauseMic, resumeMic } from "../mic/page";  // ✅ import functions
 
-export default function TranslateToSpeech() {
+export default function TranslateToSpeech({selectedLang, setSelectedLang, selectedVoiceURI, setSelectedVoiceURI}) {
   const [voices, setVoices] = useState([]);
   const [languages, setLanguages] = useState([]);
-  const [selectedLang, setSelectedLang] = useState('');
+  // const [selectedLang, setSelectedLang] = useState('');
   const [filteredVoices, setFilteredVoices] = useState([]);
-  const [selectedVoiceURI, setSelectedVoiceURI] = useState('');
+  // const [selectedVoiceURI, setSelectedVoiceURI] = useState('');
   const [text, setText] = useState('');
   const[sourcelangcode , setSourcelangcode] = useState('');
   const[targetlangcode , setTargetlangcode] = useState('');
@@ -186,14 +186,14 @@ useEffect(() => {
 
 
   return (
-    <div className="p-6 space-y-4 pt-0">
+    <div className="p-6 pt-0 space-y-4">
       {/* Language Selection */}
       <div>
         <label className="block mb-1 font-semibold">🎧 Select/Change Language in which you want to listen:</label>
         <select
           value={selectedLang}
           onChange={(e) => setSelectedLang(e.target.value)}
-          className="border p-2 w-full"
+          className="w-full p-2 border"
         >
           <option value="">-- Select Language --</option>
           {languages.map((lang, idx) => (
@@ -204,13 +204,13 @@ useEffect(() => {
 
       {/* Voice Selection */}
       <div>
-        <label className="block font-medium mb-1">Select Voice:</label>
+        <label className="block mb-1 font-medium">Select Voice:</label>
         <select
           value={selectedVoiceURI}
           onChange={(e) => {setSelectedVoiceURI(e.target.value),
             localStorage.setItem('voice1', e.target.value)}
           }
-          className="border p-2 w-full "
+          className="w-full p-2 border "
         >
           <option value="">-- Select Voice --</option>
           {filteredVoices.map((voice, idx) => (

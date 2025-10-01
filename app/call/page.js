@@ -85,6 +85,9 @@ export default function Callpage() {
   const [micrequeaccepted,setmicrequestaccepted] =useState(false);
   const [showgivemic,setshowgivemic] =useState(false);
   const [onmicpage,setonmicpage] =useState(true);
+  const [selectedvoiceLang, setSelectedvoiceLang] = useState('');
+  const [selectedVoiceURI, setSelectedVoiceURI] = useState('');
+
 
   
   const [toid, settoid] = useState('');
@@ -409,6 +412,14 @@ const handleSwap = () => {
   
   
   const handletransconfirm = () => {
+    if(!selectedvoiceLang){
+      alert('select translating language first.')
+      return;
+    }
+    if(!selectedVoiceURI){
+      alert('select translate-voice first.')
+      return;
+    }
     setListenintranslang(true);
     setShowolang(false);
     
@@ -512,8 +523,8 @@ socket.on("give-mic",()=>{
     console.log('Language icon clicked'); // Debug log
     setShowolang(true);
     toast.info(
-      <div className="text-center pt-3 pr-2 pb-2 pl-1">
-        <b className="text-lg pr-12 text-blue-500">Important Note</b>
+      <div className="pt-3 pb-2 pl-1 pr-2 text-center">
+        <b className="pr-12 text-lg text-blue-500">Important Note</b>
         <p className="mt-1">For better experience speak clearly and at a normal speed in the selected language only.</p>
       </div>,
       {
@@ -539,39 +550,39 @@ socket.on("give-mic",()=>{
 
 
   return (
-    <div className="relative w-full h-screen bg-black overflow-hidden">
+    <div className="relative w-full h-screen overflow-hidden bg-black">
       {/* topbar */}
       <div className="fixed top-0 left-0 right-0 z-50"> {/* Changed to fixed and added z-50 */}
-        <div className="flex justify-between items-center px-6 py-3 bg-gray-900 h-15">
+        <div className="flex items-center justify-between px-6 py-3 bg-gray-900 h-15">
           <h2 className="text-xl font-semibold text-white">Meeting with Kero Gang</h2>
           <span className="text-sm text-green-400">🔴 Live</span>
           <div className="flex items-center">
-            <div className="relative group mr-12">
+            <div className="relative mr-12 group">
               <lord-icon
                 src={(!showlang) ? 'https://cdn.lordicon.com/jdgfsfzr.json' : "https://cdn.lordicon.com/ehcxqqor.json"}
                 onClick={(!showlang) ? handleLanguageClick : () => { setShowolang(false) }}
                 trigger="hover"
                 state="hover-conversation-alt"
                 colors={(!showlang) ? "primary:#3080e8,secondary:#08a88a" : "primary:#d59f80,secondary:#08a88a"}
-                className="w-10 h-10 md:w-12 md:h-12 cursor-pointer"
+                className="w-10 h-10 cursor-pointer md:w-12 md:h-12"
               />
               {!showlang && (
 
-                <div className="absolute right-full top-1/2 transform -translate-y-1/2 mr-2 px-3 py-2 text-sm text-white bg-gray-700 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-20">
+                <div className="absolute z-20 px-3 py-2 mr-2 text-sm text-white transition-opacity duration-200 transform -translate-y-1/2 bg-gray-700 rounded opacity-0 right-full top-1/2 group-hover:opacity-100 whitespace-nowrap">
                   {!listenintranslang && <span>Listen in your favorite language</span>}
                   {listenintranslang && <span>Listen in Original language</span>}
-                  <div className="absolute top-1/2 left-full -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-t-transparent border-b-transparent border-r-gray-700"></div>
+                  <div className="absolute w-0 h-0 -translate-y-1/2 border-t-4 border-b-4 border-r-4 top-1/2 left-full border-t-transparent border-b-transparent border-r-gray-700"></div>
                 </div>
               )}
 
               {showlang && (
-                <div className="absolute right-full top-1/2 transform -translate-y-1/2 mr-2 px-3 py-2 text-sm text-white bg-gray-700 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-20">
+                <div className="absolute z-20 px-3 py-2 mr-2 text-sm text-white transition-opacity duration-200 transform -translate-y-1/2 bg-gray-700 rounded opacity-0 right-full top-1/2 group-hover:opacity-100 whitespace-nowrap">
                   Close Lang page
-                  <div className="absolute top-1/2 left-full -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-t-transparent border-b-transparent border-r-gray-700"></div>
+                  <div className="absolute w-0 h-0 -translate-y-1/2 border-t-4 border-b-4 border-r-4 top-1/2 left-full border-t-transparent border-b-transparent border-r-gray-700"></div>
                 </div>
               )}
             </div>
-            <div className="w-11 h-11 rounded-full object-cover bg-gray-500 flex items-center text-center justify-center">
+            <div className="flex items-center justify-center object-cover text-center bg-gray-500 rounded-full w-11 h-11">
               <UserButton
                 appearance={{
                   elements: {
@@ -595,11 +606,11 @@ socket.on("give-mic",()=>{
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ type: "spring", damping: 20, stiffness: 300 }}
-            className="absolute z-60 top-16 right-4 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden"
+            className="absolute overflow-hidden bg-white border border-gray-100 shadow-2xl z-60 top-16 right-4 w-72 dark:bg-gray-800 rounded-xl dark:border-gray-700"
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-3 flex justify-between items-center">
-              <h3 className="text-white font-semibold flex items-center gap-2">
+            <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-600">
+              <h3 className="flex items-center gap-2 font-semibold text-white">
                 <motion.div
                   animate={{ rotate: [0, 15, -15, 0] }}
                   transition={{ repeat: Infinity, duration: 2 }}
@@ -610,7 +621,7 @@ socket.on("give-mic",()=>{
               </h3>
               <button
                 onClick={() => setShowolang(false)}
-                className="text-white hover:text-gray-200 transition-colors text-lg"
+                className="text-lg text-white transition-colors hover:text-gray-200"
               >
                 &times;
               </button>
@@ -624,7 +635,7 @@ socket.on("give-mic",()=>{
                   scale: [1, 1.05, 1],
                 }}
                 transition={{ repeat: Infinity, duration: 4 }}
-                className="mb-3 p-4 pl-7 pb-0"
+                className="p-4 pb-0 mb-3 pl-7"
               >
                 <span className="font-semibold">Select your spoken launguage</span>
                 <button
@@ -644,13 +655,13 @@ socket.on("give-mic",()=>{
                 </button>
               </motion.div>
               {showmiclang && <MICpage micrequest={false} toid={toid} />}
-              <TranslateToSpeech />
+              <TranslateToSpeech selectedLang={selectedvoiceLang} setSelectedLang={setSelectedvoiceLang} selectedVoiceURI={selectedVoiceURI} setSelectedVoiceURI={setSelectedVoiceURI}/>
             </div>
 
 
             {/* Footer */}
             <motion.div
-              className="bg-gray-50 dark:bg-gray-700 px-4 py-3 flex justify-end border-t border-gray-200 dark:border-gray-600"
+              className="flex justify-end px-4 py-3 border-t border-gray-200 bg-gray-50 dark:bg-gray-700 dark:border-gray-600"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
@@ -660,7 +671,7 @@ socket.on("give-mic",()=>{
                 whileTap={{ scale: 0.98 }}
                 className={`px-4 py-2 ${!listenintranslang ? 'text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2bg-blue-600 hover:bg-blue-700' : 'text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-1 mr-4'}  rounded-lg transition-colors`}
               >
-                 {!listenintranslang && <div onClick={handletransconfirm}>Confirm</div>}
+                 {!listenintranslang && <div onClick={handletransconfirm}>Activate translating</div>}
                 {listenintranslang && <div onClick={() => { setListenintranslang(false) , setShowolang(false)
                   if(socket){
                     socket.emit("cancle-mic",toid);
@@ -675,7 +686,7 @@ socket.on("give-mic",()=>{
 
 
       {/* local and remote video    */}
-      <div className="relative p-4 flex flex-col w-full h-full">
+      <div className="relative flex flex-col w-full h-full p-4">
 
      {/* Listening animation with lower z-index */}
          {!showlang && showmiclang && (
@@ -686,7 +697,7 @@ socket.on("give-mic",()=>{
     <MICpage 
       micrequest={micrequest} 
       toid={toid} 
-      className="absolute top-52 right-10 z-20"
+      className="absolute z-20 top-52 right-10"
     />
     }
     
@@ -702,18 +713,18 @@ socket.on("give-mic",()=>{
   </>
  
 )}
-        {!showlang && isremotemute && <TranslateToSpeech className='absolute z-10' />}
+        {!showlang && isremotemute && <TranslateToSpeech selectedLang={selectedvoiceLang} setSelectedLang={setSelectedvoiceLang} selectedVoiceURI={selectedVoiceURI} setSelectedVoiceURI={setSelectedVoiceURI} className="absolute z-10"/>}
 
         {/* translating animation */}
         {isremotemute && (
 
-          <span className="absolute top-25 md:right-10 right-2 z-10 text-cyan-300 text-sm md:text-2xl dark:text-cyan-200 font-medium flex flex-row items-center ">
+          <span className="absolute z-10 flex flex-row items-center text-sm font-medium top-25 md:right-10 right-2 text-cyan-300 md:text-2xl dark:text-cyan-200 ">
             <span>Translating</span>
             <DotLottieReact
               src="https://lottie.host/20edb9ee-c915-47aa-9234-d6fbb3fa43dd/gubUz3v5LG.lottie"
               loop
               autoplay
-              className="w-22 h-22 inline"
+              className="inline w-22 h-22"
             />
           </span>
 
@@ -760,7 +771,7 @@ socket.on("give-mic",()=>{
       //   <img  */}
       {/* //     src={user?.imageUrl} 
       //     alt="Profile" 
-      //     className="h-full w-full object-cover rounded-lg"
+      //     className="object-cover w-full h-full rounded-lg"
       //   />
       // )} */}
 
@@ -808,7 +819,7 @@ socket.on("give-mic",()=>{
       muted
       autoPlay
       playsInline
-      className="w-full h-full object-cover"
+      className="object-cover w-full h-full"
       style={{ borderRadius: 10, border: "2px solid #333" }}
     />
 
@@ -817,30 +828,30 @@ socket.on("give-mic",()=>{
       <>
         <div
           onMouseDown={(e) => startResize("right", e)}
-          className="absolute top-0 right-0 w-2 h-full cursor-ew-resize z-20"
+          className="absolute top-0 right-0 z-20 w-2 h-full cursor-ew-resize"
         />
         <div
           onMouseDown={(e) => startResize("left", e)}
-          className="absolute top-0 left-0 w-2 h-full cursor-ew-resize z-20"
+          className="absolute top-0 left-0 z-20 w-2 h-full cursor-ew-resize"
         />
         <div
           onMouseDown={(e) => startResize("bottom", e)}
-          className="absolute bottom-0 left-0 h-2 w-full cursor-ns-resize z-20"
+          className="absolute bottom-0 left-0 z-20 w-full h-2 cursor-ns-resize"
         />
         <div
           onMouseDown={(e) => startResize("top", e)}
-          className="absolute top-0 left-0 h-2 w-full cursor-ns-resize z-20"
+          className="absolute top-0 left-0 z-20 w-full h-2 cursor-ns-resize"
         />
       </>
     )}
   </motion.div>
 
-      {tempofer && <div className="absolute bottom-2 w-full z-10">
+      {tempofer && <div className="absolute z-10 w-full bottom-2">
         <CallControls camerastream={localStream} data={callState.to} onCameraToggle={handleCameraToggle} />
       </div>
       }
       {incomingOffer &&
-        <div className="absolute bottom-2 w-full z-10">
+        <div className="absolute z-10 w-full bottom-2">
           <CallControls camerastream={localStream} data={incomingOffer.from} onCameraToggle={handleCameraToggle}/>
         </div>
       }

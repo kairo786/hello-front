@@ -55,7 +55,7 @@ export default function ContactPage() {
               value={name}
               onChange={e => setName(e.target.value)}
               required
-              className="w-full border  border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full border text-black border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               placeholder="Gajodhar Singh"
             />
           </div>
@@ -70,7 +70,7 @@ export default function ContactPage() {
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full border text-black border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               placeholder="B_jogi@gmail.com"
             />
           </div>
@@ -85,7 +85,7 @@ export default function ContactPage() {
               onChange={e => setMessage(e.target.value)}
               required
               rows="3"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full text-black border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               placeholder="Write your message..."
             />
           </div>

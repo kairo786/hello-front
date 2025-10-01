@@ -1,5 +1,8 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { IoIosSend } from "react-icons/io";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+
 
 export default function Chatbot() {
   const [messages, setMessages] = useState([
@@ -74,16 +77,14 @@ export default function Chatbot() {
           {messages.map((m, i) => (
             <div
               key={i}
-              className={`flex mb-2 ${
-                m.role === "user" ? "justify-end" : "justify-start"
-              }`}
+              className={`flex mb-2 ${m.role === "user" ? "justify-end" : "justify-start"
+                }`}
             >
               <div
-                className={`py-2 px-4 rounded-lg max-w-[80%] ${
-                  m.role === "user"
+                className={`py-2 px-4 rounded-lg max-w-[80%] ${m.role === "user"
                     ? "bg-blue-500 text-white rounded-br-none"
                     : "bg-gray-200 text-gray-800 rounded-bl-none"
-                }`}
+                  }`}
               >
                 {m.role === "bot" && i === messages.length - 1 && loading
                   ? `Thinking${dots}`
@@ -104,11 +105,21 @@ export default function Chatbot() {
             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           />
           <button
-            onClick={sendMessage}
-            className="bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 transition-colors"
+            onClick={sendMessage}  disabled={loading}
+            className={`${loading ? "bg-gray-700 h-12 w-12 flex items-center justify-center" : "bg-gray-800 p-2"
+              } text-white rounded-full hover:bg-black transition-colors`}
           >
-            ➤
+            {!loading && <IoIosSend className="text-cyan-400 text-2xl" />}
+            {loading && (
+              <DotLottieReact
+                src="https://lottie.host/1ccc6686-787f-4547-afe5-dfd82ea0dc2f/hLioqtJaEq.lottie"
+                loop
+                autoplay
+                className="h-20 w-20" // yaha height aur width set karo
+              />
+            )}
           </button>
+
         </div>
       </div>
     </div>

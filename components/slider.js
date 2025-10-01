@@ -25,7 +25,7 @@ const images2 = [
   "https://i.ibb.co/1JXxR0D7/s5.jpg",
   "https://i.ibb.co/ccj3WL5g/s6.jpg",
   "https://i.ibb.co/wZbXqRjp/s7.jpg",
-  "https://i.ibb.co/G35vcmt8/s8.jpg",
+  "https://i.ibb.co/fzMdBzSg/arvind.jpg",
   "https://i.ibb.co/bMthv7xT/s9.jpg",
   "https://i.ibb.co/M56fPS0C/s10.jpg",
   "https://i.ibb.co/7NNqmWRS/s11.jpg",
@@ -61,7 +61,7 @@ const Slider = () => {
   }, [controls2])
   return (
     <div className="flex flex-col gap-6 ">
-<div className="relative overflow-hidden w-full mt-4">
+<div className="relative w-full mt-4 overflow-hidden">
         <motion.div
           ref={containerRef2}
           animate={controls2}
@@ -71,18 +71,18 @@ const Slider = () => {
           {images2.concat(images2).map((ima, index) => (
             <motion.div
               key={index}
-              className="shrink-0 bg-white rounded-full shadow-xl overflow-hidden cursor-pointer transition-transform"
+              className="overflow-hidden transition-transform bg-white rounded-full shadow-xl cursor-pointer shrink-0"
             >
               <img
                 src={ima}
                 alt='#'
-                className="w-24 h-24 rounded-full object-cover bg-gray-600"
+                className="object-cover w-24 h-24 bg-gray-600 rounded-full"
               />
             </motion.div>
           ))}
         </motion.div>
       </div>
-   <div className="relative overflow-hidden w-full mb-2">
+   <div className="relative w-full mb-2 overflow-hidden">
         <motion.div
           ref={containerRef1}
           animate={controls1}
@@ -92,12 +92,12 @@ const Slider = () => {
           {images1.concat(images1).map((ima, index) => (
             <motion.div
               key={index}
-              className="shrink-0 bg-white rounded-full shadow-xl overflow-hidden cursor-pointer transition-transform"
+              className="overflow-hidden transition-transform bg-white rounded-full shadow-xl cursor-pointer shrink-0"
             >
               <img
                 src={ima}
                 alt='#'
-                className="w-24 h-24 rounded-full object-cover bg-gray-600 "
+                className="object-cover w-24 h-24 bg-gray-600 rounded-full "
               />
             </motion.div>
           ))}

@@ -121,7 +121,7 @@ export default function CallUIPage({ roler = "", socket = null ,image =null , us
 
   return (
     <motion.div
-      className="flex flex-col items-center justify-center h-screen text-white relative"
+      className="relative flex flex-col items-center justify-center h-screen text-white"
       style={{ backgroundColor }}
     >
       {/* Audio Elements */}
@@ -133,7 +133,7 @@ export default function CallUIPage({ roler = "", socket = null ,image =null , us
       </audio>
 
       {/* Top-right icons */}
-      <div className="absolute top-4 right-4 flex gap-3">
+      <div className="absolute flex gap-3 top-4 right-4">
         <IconButton icon={<Mic />} />
         <IconButton icon={<Volume2 />} />
         <IconButton icon={<Video />} />
@@ -141,14 +141,14 @@ export default function CallUIPage({ roler = "", socket = null ,image =null , us
 
       {/* Avatar */}
       <motion.div
-        className="w-44 h-44 rounded-full overflow-hidden border-4 border-blue-400 shadow-2xl"
+        className="overflow-hidden border-4 border-blue-400 rounded-full shadow-2xl w-44 h-44"
         animate={{ scale: [1, 1.08, 1] }}
         transition={{ duration: 2, repeat: Infinity }}
       >
         <img
           src={image}
           alt="User"
-          className="w-full h-full object-cover"
+          className="object-cover w-full h-full"
         />
       </motion.div>
 
@@ -158,7 +158,7 @@ export default function CallUIPage({ roler = "", socket = null ,image =null , us
           {role === "caller" ? `Calling... to ${username}` : `Incoming Call...  from ${username}`}
         </h1>
         {role === "receiver" ? (
-          <p className="text-gray-300 mt-1">Swipe to Accept or Decline</p>
+          <p className="mt-1 text-gray-300">Swipe to Accept or Decline</p>
         ) : (
           <motion.div
             className="mt-4 text-sm text-green-300"
@@ -172,9 +172,9 @@ export default function CallUIPage({ roler = "", socket = null ,image =null , us
 
       {/* Receiver Swipe Action */}
       {role === "receiver" && (
-        <div className="mt-14 w-full flex justify-center px-8">
+        <div className="flex justify-center w-full px-8 mt-14">
           <motion.div
-            className="w-24 h-24 bg-white text-green-600 rounded-full flex items-center justify-center shadow-lg cursor-pointer"
+            className="flex items-center justify-center w-24 h-24 text-green-600 bg-white rounded-full shadow-lg cursor-pointer"
             drag="x"
             dragConstraints={{ left: -150, right: 150 }}
             dragElastic={0.3}
@@ -193,7 +193,7 @@ export default function CallUIPage({ roler = "", socket = null ,image =null , us
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.9 }}
           onClick={handleEndCall}
-          className="mt-16 px-6 py-3 rounded-full bg-red-600 hover:bg-red-700 transition text-white flex gap-2 items-center"
+          className="flex items-center gap-2 px-6 py-3 mt-16 text-white transition bg-red-600 rounded-full hover:bg-red-700"
         >
           <PhoneOff className="w-5 h-5" />
           End Call
@@ -209,10 +209,10 @@ function IconButton({ icon, label }) {
       whileTap={{ scale: 0.9 }}
       className="flex flex-col items-center text-center cursor-pointer"
     >
-      <div className="w-14 h-14 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-700 transition">
+      <div className="flex items-center justify-center transition bg-gray-800 rounded-full w-14 h-14 hover:bg-gray-700">
         {icon}
       </div>
-      {label && <p className="text-xs mt-1 text-gray-400">{label}</p>}
+      {label && <p className="mt-1 text-xs text-gray-400">{label}</p>}
     </motion.div>
   );
 }
