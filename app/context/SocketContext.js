@@ -12,8 +12,8 @@ export const SocketProvider = ({ children, userData }) => {
 
   // ✅ Initialize socket only once
   if (!socketRef.current) {
-    // socketRef.current = io("https://hello-backend-project.onrender.com", {
-      socketRef.current = io("http://localhost:3001", { // for local dev
+    socketRef.current = io("https://hello-backend-project.onrender.com", {
+      // socketRef.current = io("http://localhost:3001", { // for local dev
       withCredentials: true,
       autoConnect: false,
     });
