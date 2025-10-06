@@ -6,7 +6,7 @@ import React, { useEffect, useState,useCallback } from 'react';
 import { useSocket } from "../context/SocketContext";
 // import { pauseMic, resumeMic } from "../mic/page";  // ✅ import functions
 
-export default function TranslateToSpeech({selectedLang, setSelectedLang, selectedVoiceURI, setSelectedVoiceURI}) {
+export default function TranslateToSpeech({selectedLang, setSelectedLang, selectedVoiceURI, setSelectedVoiceURI ,className=""}) {
   const [voices, setVoices] = useState([]);
   const [languages, setLanguages] = useState([]);
   // const [selectedLang, setSelectedLang] = useState('');
@@ -186,7 +186,7 @@ useEffect(() => {
 
 
   return (
-    <div className="p-6 pt-0 space-y-4">
+    <div className={`p-6 pt-0 space-y-4 ${className}`}>
       {/* Language Selection */}
       <div>
         <label className="block mb-1 font-semibold">🎧 Select/Change Language in which you want to listen:</label>

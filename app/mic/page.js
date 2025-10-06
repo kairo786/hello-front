@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useSocket } from "../context/SocketContext";
 import { ToastContainer, toast } from 'react-toastify';
 
-const MICpage = ({ micrequest = false, toid = null }) => {
+const MICpage = ({ micrequest = false, toid = null ,clasName = "" }) => {
   const recognitionRef = useRef(null);
   const [message, setMessage] = useState("");
   const [selectedLang, setSelectedLang] = useState("ja-JP");
@@ -217,7 +217,7 @@ const MICpage = ({ micrequest = false, toid = null }) => {
   };
 
   return (
-    <div className="p-5 pt-0 pl-7">
+    <div className={`p-5 pt-0 pl-7 ${clasName}`}>
       {show ? (
         <span>
           <span>Your current speaking language: </span>

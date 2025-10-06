@@ -5,16 +5,16 @@ import { PhoneCall, PhoneOff, Mic, Video, Volume2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 // import { useSocket } from "../context/SocketContext";
 
-export default function CallUIPage({ roler = "", socket = null ,image =null , username=null ,fromid =null,toid=null}) {
-  const [role, setRole] = useState(""); // 'caller' or 'receiver'
+export default function CallUIPage({ role,setRole ,socket = null ,image =null , username=null ,fromid =null,toid=null}) {
+  // const [role, setRole] = useState(""); // 'caller' or 'receiver'
   const dragX = useMotionValue(0);
   const route = useRouter();
   const callerRef = useRef(null);
   const receiverRef = useRef(null);
 
-  useEffect(() => {
-    setRole(roler);
-  }, [roler]);
+  // useEffect(() => {
+  //   setRole(roler);
+  // }, [roler]);
 
 
   useEffect(() => {
@@ -27,14 +27,14 @@ export default function CallUIPage({ roler = "", socket = null ,image =null , us
       alert("Call Declined");
       console.log("call decline");
       setRole(" ");
-      route.push("/");
+      // route.push("/chat");
     }
     const handleanswer = () => {
       route.push("/call");
     }
     const handlemisscall =() => {
       alert("missed call");
-      route.push("/");
+      // route.push("/chat");
       setRole("");
     }
     
@@ -106,17 +106,19 @@ export default function CallUIPage({ roler = "", socket = null ,image =null , us
     callerRef.current?.pause();
     receiverRef.current?.pause();
     alert("❌ Call Declined");
+    setRole("");
     socket.emit("call-decline",fromid);
     // window.location.href = '/chat'
-    route.push("/");
+    // route.push("/chat");
   };
 
   const handleEndCall = () => {
     callerRef.current?.pause();
     receiverRef.current?.pause();
     alert("📞 Call Ended");
+    setRole("");
     socket.emit("miss-call",toid);
-    route.push("/");
+    // route.push("/chat");
   };
 
   return (

@@ -11,20 +11,30 @@ import Navbar from "@/components/Navbar";
 import GoogleAd from "@/components/adcomponet";
 import Chatbot from "@/components/chatbot";
 import { useSocket } from "./context/SocketContext";
+import { useUser } from '@clerk/nextjs';
 
 export default function Home() {
   const socket = useSocket();
   const router = useRouter();
   const [onlineuser, setonlineuser] = useState(1);
   const [openbot, setopenbot] = useState(false);
+  const { isSignedIn, user } = useUser();
 
 
   useEffect(() => {
     if(!socket){return ;}
     socket.on("usersUpdate", (count) => {
+      console.log("count received ",count);
       setonlineuser(count - 1);
     });
   }, [socket]);
+
+  useEffect(() => {
+    if(!socket) return;
+  socket.emit('req-online-user-number');
+  console.log('request sent');
+  }, [socket])
+  
 
 
   return (
@@ -109,9 +119,11 @@ export default function Home() {
           <div className="flex flex-col items-center justify-center gap-6 p-6 md:gap-8">
 
             {/* Online users badge */}
+           { isSignedIn &&
             <div className="p-3 font-semibold text-center text-white border-2 border-green-600 shadow-lg bg-gradient-to-r rounded-circle w-70 md:w-70 from-green-400 to-emerald-500 md:rounded-full ">
               🩷 {onlineuser} Users Online
-            </div>
+            </div> 
+            }
 
             {/* Buttons wrapper */}
             <div className="flex flex-col gap-5 md:flex-row md:gap-6">

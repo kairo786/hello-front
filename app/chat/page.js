@@ -33,60 +33,59 @@ const ChatPage = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [callto, setcallto] = useState({});
   const callTimeoutRef = useRef(null);
-  const[dbdep,setdbdep] = useState(false);
 
-  // Load lord-icon script
-  useEffect(() => {
-    const loadLordIconScript = async () => {
-      const lottie = await import("lottie-web");
-      const { defineElement } = await import("lord-icon-element");
-      defineElement(lottie);
-    };
-    loadLordIconScript();
-  }, []);
+  // // Load lord-icon script
+  // useEffect(() => {
+  //   const loadLordIconScript = async () => {
+  //     const lottie = await import("lottie-web");
+  //     const { defineElement } = await import("lord-icon-element");
+  //     defineElement(lottie.loadAnimation);
+  //   };
+  //   loadLordIconScript();
+  // }, []);
 
   useEffect(() => {
     if (!user.primaryEmailAddress?.emailAddress) return;
-    const loaduser =() => {
-        fetch(
-      `process.env.NEXT_PUBLIC_API_URL/get-users?email=${user.primaryEmailAddress.emailAddress}`,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      }
-     )
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("data", data);
-        setSelectedUser(null);
-        setUsers((prevUsers) => {
-          const newUsers = { ...prevUsers };
+    const loaduser = () => {
+      fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/get-users?email=${user.primaryEmailAddress.emailAddress}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("data", data);
+          setSelectedUser(null);
+          setUsers((prevUsers) => {
+            const newUsers = { ...prevUsers };
 
-          data.forEach((userObj, index) => {
-            // check agar email pehle se exist karta hai to skip
-            const alreadyExists = Object.values(newUsers).some(
-              (u) => u.email === userObj.email
-            );
+            data.forEach((userObj, index) => {
+              // check agar email pehle se exist karta hai to skip
+              const alreadyExists = Object.values(newUsers).some(
+                (u) => u.email === userObj.email
+              );
 
-            if (!alreadyExists) {
-              // ek unique key banate hain (abcd + index + timestamp)
-              const uniqueKey = `abcde${index}${Date.now()}`;
-              newUsers[uniqueKey] = userObj;
-            }
+              if (!alreadyExists) {
+                // ek unique key banate hain (abcd + index + timestamp)
+                const uniqueKey = `abcde${index}${Date.now()}`;
+                newUsers[uniqueKey] = userObj;
+              }
+            });
+            return newUsers;
           });
-          return newUsers;
-        });
-      })
-      .catch((err) => console.error("Error:", err)); 
+        })
+        .catch((err) => console.error("Error:", err));
     }
-  document.addEventListener('visibilitychange', loaduser);
-  loaduser();
-  return () => {
+    document.addEventListener('visibilitychange', loaduser);
+    loaduser();
+    return () => {
       document.removeEventListener('visibilitychange', loaduser);
     };
   }, [user.primaryEmailAddress?.emailAddress]);
 
-   // Handle visibility changes to maintain socket connection
+  // Handle visibility changes to maintain socket connection
   useEffect(() => {
     if (!socket) return;
 
@@ -130,7 +129,7 @@ const ChatPage = () => {
     };
   }, [socket]);
 
- 
+
 
   useEffect(() => {
     if (!incomingOffer || !users) return;
@@ -173,32 +172,39 @@ const ChatPage = () => {
     };
 
     socket.on("calling", handlecall);
-    socket.on("call-accepted", clearCallTimeout); // listener for accepting call
+    socket.on("call-accepted", clearCallTimeout);
 
-    // Start timeout
-    callTimeoutRef.current = setTimeout(() => {
-      socket.off("calling", handlecall);
-      if (callto?.from) {
-        socket.emit("not-answered", callto.from);
-      }
-      setRole("");
-      console.log("⏰ Call-answered listener removed after 60 sec");
-    }, 60000);
+    // Start timeout only if user is caller
+    if (role === "caller") {
+      callTimeoutRef.current = setTimeout(() => {
+        console.log("⏰ 40 sec completed, no answer");
+
+        socket.emit("not-answered", selectedUser);
+        console.log('not answwer emited');
+
+        console.log('selectuser', selectedUser, "call", callto);
+        setRole("");
+        socket.off("calling", handlecall);
+        console.log("🚫 Call ended due to timeout");
+
+      }, 40000);
+    }
 
     return () => {
       socket.off("calling", handlecall);
       socket.off("call-accepted", clearCallTimeout);
-      clearCallTimeout(); // just in case
+      clearCallTimeout();
     };
-  }, [socket, callto]);
+  }, [socket, callto, role]);
+
 
 
   useEffect(() => {
     const handlenotanswer = () => {
-      alert("did not answered to the call");
+      alert("you did not answered to the call");
       // window.location.href = '/'
       setRole("");
-      route.push("/");
+      route.push("/chat");
     }
     socket.on("not-answered", handlenotanswer);
     return () => {
@@ -223,9 +229,9 @@ const ChatPage = () => {
   return (
     <div>
       {role === "receiver" ? (
-        <CallUIPage roler={role} socket={socket} image={users[callto.from]?.imgurl} username={users[callto.from]?.username} fromid={callto.from} />
+        <CallUIPage role={role} setRole={setRole} socket={socket} image={users[callto.from]?.imgurl} username={users[callto.from]?.username} fromid={callto.from} />
       ) : role === "caller" ? (
-        <CallUIPage roler={role} socket={socket} image={users[callState.to]?.imgurl} username={users[callState.to]?.username} toid={callState.to} />
+        <CallUIPage role={role} setRole={setRole} socket={socket} image={users[callState.to]?.imgurl} username={users[callState.to]?.username} toid={callState.to} />
       ) : (
         <div className="flex h-screen bg-[#0d1117] text-white">
           {/* LEFT USERS PANEL */}
@@ -286,7 +292,7 @@ const ChatPage = () => {
                       onClick={() => {
                         setSelectedUser(null);
                         setTimeout(() => {
-                        setSelectedUser(user.id)
+                          setSelectedUser(user.id)
                         }, 100);
                         history.pushState({ modalOpen: true }, "");
                       }}
@@ -304,7 +310,7 @@ const ChatPage = () => {
 
 
                     {user.id.startsWith("abcde")
-                      ? <RiVideoOffLine className="w-6 h-6 text-[#08a88a] mt-1 ml-1" onClick={()=>{alert('User is offline')}}/>
+                      ? <RiVideoOffLine className="w-6 h-6 text-[#08a88a] mt-1 ml-1" onClick={() => { alert('User is offline') }} />
                       : <lord-icon
                         onClick={() => {
                           setSelectedUser(user.id);
@@ -322,7 +328,7 @@ const ChatPage = () => {
                           height: "28px",
                           padding: "2px",
                           background: "#1f2937",
-                          borderRadius: "6px",
+                          // borderRadius: "6px",
                         }}
                       />}
 
@@ -341,7 +347,7 @@ const ChatPage = () => {
               <div className="flex flex-col items-center justify-center w-full h-full text-center">
                 {/* <h1 className="mb-3 text-3xl font-bold">{users[selectedUser].username}</h1>
             <p className="text-sm text-gray-300">Chat will appear here.</p> */}
-                <Openchat className='w-full' users={users}  senderEmail={users[socket.id]?.email} receiverEmail={users[selectedUser]?.email} receiversocketid={selectedUser} receiverimg={users[selectedUser]?.imgurl} receivername={users[selectedUser]?.username} />
+                <Openchat className='w-full' users={users} senderEmail={users[socket.id]?.email} receiverEmail={users[selectedUser]?.email} receiversocketid={selectedUser} receiverimg={users[selectedUser]?.imgurl} receivername={users[selectedUser]?.username} />
               </div>
             ) : (
               <div className="relative flex items-center justify-center h-full ml-0 overflow-hidden">
