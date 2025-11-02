@@ -1,7 +1,7 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
-import { useUser, UserButton, SignInButton } from "@clerk/nextjs";
+import { useUser, UserButton, SignInButton,useClerk } from "@clerk/nextjs";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -16,6 +16,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const { isSignedIn } = useUser();
+  const { redirectToSignIn } = useClerk();
 
   // Check system preference on mount
   useEffect(() => {
@@ -71,12 +72,12 @@ export default function Navbar() {
               />
             </motion.div>
           ))}
-          <button
+          {/* <button
             onClick={() => setDarkMode(!darkMode)}
             className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
           >
             {darkMode ? "☀️" : "🌙"}
-          </button>
+          </button> */}
           {isSignedIn ? (
             <UserButton
               appearance={{
@@ -86,9 +87,10 @@ export default function Navbar() {
           ) : (
             <span className="text-orange-500 rounded-3xl flex flex-row items-center border-2 border-green-500 p-1 gap-2 px-2 bg-green-200">
               <img
+                onClick={() => redirectToSignIn()}
                 src="https://pngimg.com/uploads/google/google_PNG19630.png"
                 alt="google-img"
-                className="w-7 h-7"
+                className="w-7 h-7 cursor-pointer"
               />
               <SignInButton />
             </span>
@@ -97,12 +99,30 @@ export default function Navbar() {
 
         {/* Mobile Toggle */}
         <div className="md:hidden flex items-center gap-4">
-          <button
+          {/* <button
             onClick={() => setDarkMode(!darkMode)}
             className="p-1 text-gray-800 dark:text-gray-200"
           >
             {darkMode ? "☀️" : "🌙"}
-          </button>
+          </button> */}
+
+          {isSignedIn ? (
+            <UserButton
+              appearance={{
+                variables: { colorPrimary: darkMode ? "#4ade80" : "#166534" },
+              }}
+            />
+          ) : (
+            <span className="text-orange-500 rounded-3xl flex flex-row items-center border-2 border-green-500 p-1 gap-2 px-2 bg-green-200">
+              <img
+                onClick={() => redirectToSignIn()}
+                src="https://pngimg.com/uploads/google/google_PNG19630.png"
+                alt="google-img"
+                className="w-7 h-7"
+              />
+              <SignInButton />
+            </span>
+          )}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="focus:outline-none text-gray-800 dark:text-gray-200"

@@ -6,7 +6,9 @@ import { useSocket } from '../context/SocketContext';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { useButton } from '../context/buttoncontext';
 import { useOffer } from '../context/offercontext';
+import { useUser } from '@clerk/nextjs';
 import Callpage from '../call/page';
+import { ToastContainer, toast } from 'react-toastify';
 
 export default function VideoCallPage() {
   const [isConnected, setIsConnected] = useState(false);
@@ -19,6 +21,11 @@ export default function VideoCallPage() {
   const { incomingOffer, setIncomingOffer } = useOffer();
   const [partnerid, setpartnerid] = useState();
   const socket = useSocket();
+  const { isLoaded, user } = useUser();
+  const [isfriendadded, setisfriendadded] = useState("default"); // "allowed"  ,"notallowed"
+
+
+
 
   // Initialize media stream
   useEffect(() => {
@@ -37,7 +44,7 @@ export default function VideoCallPage() {
     };
 
     initializeMedia();
-  }, [oncall , isConnected ,isSearching]);
+  }, [oncall, isConnected, isSearching]);
 
   // Timer effect
   useEffect(() => {
@@ -69,38 +76,38 @@ export default function VideoCallPage() {
     // alert('handle next clicked');
   }
 
-  const handlestop = () => {  
-        // alert('stoped');
-        setTimeout(() => {
-        setIsConnected(false);
-        setIsSearching(false); 
-        }, 200);
-        if(socket){
-          if(!isSearching){
-          socket.emit("end-call" ,partnerid);
-          }
-          else{
-            socket.emit("remove-random-search");
-          }
-          socket.emit("random-stopped",partnerid);
-        }
+  const handlestop = () => {
+    // alert('stoped');
+    setTimeout(() => {
+      setIsConnected(false);
+      setIsSearching(false);
+    }, 200);
+    if (socket) {
+      if (!isSearching) {
+        socket.emit("end-call", partnerid);
+      }
+      else {
+        socket.emit("remove-random-search");
+      }
+      socket.emit("random-stopped", partnerid);
+    }
   }
 
   useEffect(() => {
-     if(!socket) return;
+    if (!socket) return;
 
     const stopper = () => {
       // alert('stoped');
-        setIsConnected(false);
-        setIsSearching(false);
+      setIsConnected(false);
+      setIsSearching(false);
     }
     // socket.on("end-call",stopper);
-    socket.on("random-stopped",stopper);
+    socket.on("random-stopped", stopper);
     return () => {
-    socket.off("random-stopped",stopper);
+      socket.off("random-stopped", stopper);
     }
   }, [socket])
-  
+
 
   useEffect(() => {
     const MatchedHandler = ({ role, partnerId }) => {
@@ -111,6 +118,7 @@ export default function VideoCallPage() {
         // alert("role : " + role + " partnerid : " + partnerId);   // Caller → WebRTC offer बनाकर partner को भेजे
         setCallState({ clicked: true, from: socket.id, to: partnerId });
         setpartnerid(partnerId);
+        setisfriendadded("default");
         setIsConnected(true);
         setIsSearching(false);
 
@@ -118,7 +126,7 @@ export default function VideoCallPage() {
 
         // alert("role : " + role + " partnerid : " + partnerId);     // Receiver → Offer accept करे
         setpartnerid(partnerId);
-
+        setisfriendadded("default");
       }
     }
     socket.on("matched", MatchedHandler);
@@ -143,6 +151,170 @@ export default function VideoCallPage() {
     };
   }, [setIncomingOffer, socket])
 
+  // 👇 यहाँ से ड्रैग लॉजिक शुरू होता है
+
+  const [position, setPosition] = useState({ x: 0, y: 0 }); // वीडियो की वर्तमान पोजीशन
+  const [isDragging, setIsDragging] = useState(false); // क्या वीडियो ड्रैग हो रहा है
+  const [startPos, setStartPos] = useState({ x: 0, y: 0 }); // माउस/टच की शुरुआत की पोजीशन
+
+  useEffect(() => {
+    const videoElement = localVideoRef.current;
+    if (!videoElement) return;
+
+    // MD breakpoint से नीचे (यानी मोबाइल) पर ही ड्रैगिंग लागू करें
+    const isMobile = window.innerWidth < 768;
+    if (!isMobile) return;
+
+    // 1. Mouse Events (कंप्यूटर पर टच सिमुलेशन के लिए)
+    const handleMouseDown = (e) => {
+      setIsDragging(true);
+      setStartPos({
+        x: e.clientX - position.x,
+        y: e.clientY - position.y
+      });
+      e.preventDefault();
+    };
+
+    const handleMouseMove = (e) => {
+      if (!isDragging) return;
+      setPosition({
+        x: e.clientX - startPos.x,
+        y: e.clientY - startPos.y
+      });
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    // 2. Touch Events (वास्तविक मोबाइल टच के लिए)
+    const handleTouchStart = (e) => {
+      const touch = e.touches[0];
+      setIsDragging(true);
+      setStartPos({
+        x: touch.clientX - position.x,
+        y: touch.clientY - position.y
+      });
+      // e.preventDefault();
+    };
+
+    const handleTouchMove = (e) => {
+      if (!isDragging) return;
+      const touch = e.touches[0];
+      setPosition({
+        x: touch.clientX - startPos.x,
+        y: touch.clientY - startPos.y
+      });
+      e.preventDefault(); // टच करते समय पेज स्क्रोल होने से रोकता है
+    };
+
+    const handleTouchEnd = () => {
+      setIsDragging(false);
+    };
+
+    // Event Listeners जोड़ें
+    videoElement.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+
+    videoElement.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('touchend', handleTouchEnd);
+
+
+    // Cleanup function - कंपोनेंट अनमाउंट होने पर इवेंट हटाएँ
+    return () => {
+      videoElement.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+
+      videoElement.removeEventListener('touchstart', handleTouchStart);
+      window.addEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [isDragging, position, startPos]);
+  // useEffect Dependencies: ये Hooks को अपडेट होने पर लॉजिक को फिर से चलाने में मदद करते हैं
+
+  // 3. CSS Style Object
+  const videoStyle = {
+    // सिर्फ़ मोबाइल पर ट्रांसलेट लागू करें
+    transform: window.innerWidth < 768
+      ? `translate(${position.x}px, ${position.y}px)`
+      : 'none',
+    // ड्रैगिंग के दौरान वीडियो को ऊपर रखें
+    zIndex: 50,
+    // ड्रैग करते समय कर्सर को 'move' दिखाएँ
+    cursor: 'move',
+  };
+
+
+  const [senderemail, setsenderemail] = useState();
+
+ useEffect(() => {
+  if (!socket) return;
+  // 🔹 Handle "send-email" event (when someone requests to add friend)
+  const handleEmail = () => {
+    const confirmResult = window.confirm("Your room member wants to add you as a friend?");
+    
+    if (confirmResult) {
+      console.log("✅ Friend request accepted");
+      const data = { 
+        toid: partnerid, 
+        email: user.primaryEmailAddress?.emailAddress 
+      };
+      socket.emit("sendemailres", data);
+    } else {
+      console.log("❌ Friend request declined");
+      socket.emit("canclemail", partnerid);
+    }
+  };
+
+  // 🔹 Handle "sendemailres" event (when friend accepts)
+  const handleMailRes = (receiverEmail) => {
+    toast.success("✅ Added as a friend successfully!");
+    setisfriendadded("allowed");
+
+    if (receiverEmail !== senderemail) {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/send-message`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          senderEmail: senderemail,
+          receiverEmail,
+          message: "Hey there, how are you?",
+        }),
+      }).catch((err) => console.error("Error sending message:", err));
+    } else {
+      alert("tum hi bandhu sakha tum hi 😄");
+    }
+  };
+
+  // 🔹 Handle "canclemail" event (when friend declines)
+  const handleCancelMail = () => {
+    setisfriendadded("notallowed");
+    toast.error("❌ Friend request declined");
+  };
+
+  // ✅ Register socket listeners
+  socket.on("send-email", handleEmail);
+  socket.on("sendemailres", handleMailRes);
+  socket.on("canclemail", handleCancelMail);
+
+  // 🧹 Cleanup (important to prevent duplicate listeners)
+  return () => {
+    socket.off("send-email", handleEmail);
+    socket.off("sendemailres", handleMailRes);
+    socket.off("canclemail", handleCancelMail);
+  };
+
+}, [partnerid, senderemail, socket, user.primaryEmailAddress?.emailAddress]);
+
+
+  const addfriend = () => {
+    // alert("hi");
+    setsenderemail(user.primaryEmailAddress?.emailAddress);
+    socket.emit("send-email", partnerid);
+  }
 
 
   return (
@@ -162,10 +334,12 @@ export default function VideoCallPage() {
                 {/* Left Video */}
                 <video
                   src="/girl.mp4"
-                  className="object-cover w-8/12 h-full rounded-r-3xl rounded-l-4xl"
+                  className="object-cover w-full md:w-8/12 h-full rounded-r-3xl rounded-l-4xl"
                   autoPlay
                   muted
                   loop
+                  preload="auto"
+                  playsInline
                 />
 
                 {/* Right Local Video */}
@@ -174,7 +348,10 @@ export default function VideoCallPage() {
                   muted
                   autoPlay
                   playsInline
-                  className="object-cover w-4/12 h-full border-2 border-gray-800 rounded-r-4xl rounded-l-3xl"
+                  // 👇 यहाँ 'style' एट्रिब्यूट जोड़ा गया है
+                  style={videoStyle}
+
+                  className=" absolute md:relative md:object-cover right-1 w-4/12  md:h-full md:bottom-0 md:right-0 bottom-2 border-2 border-gray-800 rounded-xl md:rounded-r-4xl md:rounded-l-3xl"
                 />
 
                 {/* Overlay Gradient */}
@@ -184,7 +361,7 @@ export default function VideoCallPage() {
                 <div className="absolute px-4 py-2 border top-4 left-4 bg-black/70 backdrop-blur-md rounded-xl border-purple-500/30">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm font-semibold text-white">249,109 Users Online</span>
+                    <span className="text-sm font-semibold text-white">Welcome to Hello</span>
                   </div>
                 </div>
               </div>
@@ -306,6 +483,32 @@ export default function VideoCallPage() {
                   <span className="text-sm font-bold text-white md:text-base">STOP</span>
                 </span>
               </button>
+
+              {isConnected && (
+                isfriendadded === "allowed" ? (
+                  <button
+                    className="h-20 w-18 md:h-20 ml-14 md:ml-160 lg:ml-188 md:w-24 lg:w-32 px-4 py-2 text-sm font-bold text-white rounded-t-2xl rounded-b-3xl shadow-md sm:px-5 sm:py-2.5 sm:text-base bg-gradient-to-r from-green-500 to-emerald-600 opacity-80"
+                    disabled
+                  >
+                    <span>Friend Added ✓</span>
+                  </button>
+                ) : isfriendadded === "default" ? (
+                  <button
+                    onClick={addfriend}
+                    className="h-20 w-18 md:h-20 ml-14 md:ml-160 lg:ml-188 md:w-24 lg:w-32 px-4 py-2 text-sm font-bold text-white transition-all duration-300 rounded-t-2xl rounded-b-3xl shadow-md sm:px-5 sm:py-2.5 sm:text-base bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 hover:scale-105 active:scale-95"
+                  >
+                    <span>Add as Friend</span>
+                  </button>
+                ) : (
+                  <button
+                    className="h-20 w-18 md:h-20 ml-14 md:ml-160 lg:ml-188 md:w-24 lg:w-32 px-4 py-2 text-sm font-bold text-white rounded-t-2xl rounded-b-3xl shadow-md sm:px-5 sm:py-2.5 sm:text-base bg-gradient-to-r from-red-500 to-rose-700 opacity-90"
+                    disabled
+                  >
+                    <span>Request Declined ✕</span>
+                  </button>
+                )
+              )}
+
             </div>
           </div>
 

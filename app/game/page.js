@@ -536,3 +536,410 @@
 //   );
 // };
 
+// "use client";
+// import React, { useEffect } from "react";
+
+// const Page = () => {
+//   useEffect(() => {
+//     const email = "aarvindkumar@gmail.com";
+//     if (!email) return;
+
+//     const sendEmail = async () => {
+//       try {
+//         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/send-email`, {
+//           method: "POST",
+//           headers: { "Content-Type": "application/json" },
+//           body: JSON.stringify({ mail: email }),
+//         });
+
+//         if (res.ok) {
+//           console.log("✅ Email sent successfully!");
+//         } else {
+//           console.error("❌ Failed to send email");
+//         }
+//       } catch (err) {
+//         console.error("Failed to send email", err);
+//       }
+//     };
+
+//     sendEmail();
+//   }, []);
+
+//   return <div>hi</div>;
+// // };
+
+// // export default Page;
+
+
+
+
+
+
+"use client";
+// import { useState } from "react";
+
+// export default function PayButton() {
+//   const [loading, setLoading] = useState(false);
+
+//   const handlePayment = async () => {
+//     setLoading(true);
+//     const res = await fetch("/api/razorpay", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ amount: 499 }), // ₹499
+//     });
+
+//     const data = await res.json();
+//     setLoading(false);
+
+//     const options = {
+//       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID, // ✅ public key only
+//       amount: data.amount,
+//       currency: data.currency,
+//       name: "My App",
+//       description: "Test Transaction",
+//       order_id: data.id,
+//       handler: function (response) {
+//         alert(`Payment successful! ID: ${response.razorpay_payment_id}`);
+//       },
+//       prefill: {
+//         name: "Your Name",
+//         email: "email@example.com",
+//         contact: "9999999999",
+//       },
+//       theme: { color: "#3399cc" },
+//     };
+
+//     const rzp = new window.Razorpay(options);
+//     rzp.open();
+//   };
+
+//   return (
+//     <button onClick={handlePayment} disabled={loading}>
+//       {loading ? "Processing..." : "Pay ₹499"}
+//     </button>
+//   );
+// }
+
+
+
+
+
+import { useState, useEffect } from 'react';
+import { Heart, Coffee, X } from 'lucide-react';
+
+export default function BuyMeCoffee() {
+  const [donations, setDonations] = useState([]);
+  const [name, setName] = useState('');
+  const [message, setMessage] = useState('');
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [customAmount, setCustomAmount] = useState('');
+  const [isPrivate, setIsPrivate] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const coffeeOptions = [
+    { id: 'coffee', label: 'Buy me a coffee', baseAmount: 100, emoji: '☕' },
+    { id: 'lunch', label: 'Buy me lunch', baseAmount: 300, emoji: '🍱' },
+    { id: 'dinner', label: 'Buy me dinner', baseAmount: 500, emoji: '🍽️' },
+    { id: 'movie', label: 'Movie night!', baseAmount: 750, emoji: '🎬' },
+  ];
+
+  const multipliers = [1, 2, 3, 5];
+
+  // Load donations from storage
+  useEffect(() => {
+    const loadDonations = async () => {
+      try {
+        const result = await window.storage?.get('donations-list');
+        if (result?.value) {
+          setDonations(JSON.parse(result.value));
+        }
+      } catch (error) {
+        console.error('Load error:', error);
+      }
+    };
+    loadDonations();
+  }, []);
+
+  // Save donations to storage
+  const saveDonations = async (newDonations) => {
+    try {
+      await window.storage?.set('donations-list', JSON.stringify(newDonations), true);
+      setDonations(newDonations);
+    } catch (error) {
+      console.error('Save error:', error);
+    }
+  };
+
+  const handlePayment = async (amount) => {
+    if (!name.trim()) {
+      alert('Please enter your name');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/razorpay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create order');
+      }
+
+      const order = await response.json();
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: order.currency,
+        name: 'Buy Me A Coffee',
+        description: `Support from ${name}`,
+        order_id: order.id,
+        handler: async function (response) {
+          // Add donation to list only after successful payment
+          if (!isPrivate) {
+            const newDonation = {
+              id: Date.now(),
+              name: name.trim(),
+              amount,
+              message: message.trim(),
+              timestamp: new Date().toLocaleString(),
+            };
+            const updated = [newDonation, ...donations];
+            await saveDonations(updated);
+          }
+
+          // Reset form
+          setName('');
+          setMessage('');
+          setSelectedOption(null);
+          setCustomAmount('');
+          setIsPrivate(false);
+          alert('🎉 Thank you so much for your support!');
+        },
+        prefill: {
+          name,
+        },
+        theme: {
+          color: '#92400e',
+        },
+        modal: {
+          ondismiss: function () {
+            setLoading(false);
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('Error creating payment. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getAmount = () => {
+    if (customAmount) return Number(customAmount);
+    if (selectedOption) {
+      const option = coffeeOptions.find(o => o.id === selectedOption.id);
+      return option.baseAmount * selectedOption.multiplier;
+    }
+    return 0;
+  };
+
+  const amount = getAmount();
+
+  return (
+    <div className="min-h-screen bg-linear-to-br from-amber-50 via-orange-50 to-rose-50">
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 max-w-7xl mx-auto">
+        {/* Left - Donations Feed */}
+        <div className="lg:col-span-1 order-2 lg:order-1">
+          <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-6 max-h-[calc(100vh-48px)] overflow-y-auto">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <Heart size={24} className="text-red-500" />
+              Recent Supporters
+            </h2>
+
+            {donations.length === 0 ? (
+              <div className="text-center py-12">
+                <Coffee size={48} className="text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500 font-medium">No supporters yet</p>
+                <p className="text-gray-400 text-sm">Be the first one! ☕</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {donations.map((donation) => (
+                  <div
+                    key={donation.id}
+                    className="bg-linear-to-r from-amber-50 to-orange-50 rounded-lg p-4 border-l-4 border-amber-400 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <p className="font-bold text-gray-900">{donation.name}</p>
+                      <p className="text-lg font-bold text-amber-700">₹{donation.amount}</p>
+                    </div>
+                    {donation.message && (
+                      <p className="text-gray-700 italic text-sm mb-2">
+                        &quot;{donation.message}&quot;
+                      </p>
+                    )}
+                    <p className="text-xs text-gray-500">{donation.timestamp}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right - Payment Form */}
+        <div className="lg:col-span-2 order-1 lg:order-2">
+          <div className="bg-white rounded-2xl shadow-lg p-8">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <Coffee size={64} className="text-amber-700 mx-auto mb-4 drop-shadow-lg" />
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                Buy me a coffee
+              </h1>
+              <p className="text-gray-600">
+                Your support fuels my creativity and keeps me going! ☕
+              </p>
+            </div>
+
+            {/* Coffee Options */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Select Option</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {coffeeOptions.map((option) => (
+                  <div key={option.id} className="border-2 border-gray-200 rounded-lg p-4 hover:border-amber-400 transition-colors">
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <p className="font-semibold text-gray-900">{option.label}</p>
+                        <p className="text-sm text-gray-600">Base: ₹{option.baseAmount}</p>
+                      </div>
+                      <span className="text-3xl">{option.emoji}</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {multipliers.map((mult) => (
+                        <button
+                          key={mult}
+                          onClick={() => {
+                            setSelectedOption({ id: option.id, multiplier: mult });
+                            setCustomAmount('');
+                          }}
+                          className={`px-3 py-1 rounded font-semibold text-sm transition-colors ${
+                            selectedOption?.id === option.id && selectedOption?.multiplier === mult
+                              ? 'bg-amber-600 text-white'
+                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
+                        >
+                          ×{mult}
+                        </button>
+                      ))}
+                    </div>
+                    {selectedOption?.id === option.id && (
+                      <p className="text-lg font-bold text-amber-700 mt-2">
+                        ₹{option.baseAmount * selectedOption.multiplier}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Custom Amount */}
+            <div className="mb-8">
+              <label className="block text-lg font-semibold text-gray-900 mb-3">
+                💰 Or enter custom amount
+              </label>
+              <div className="relative">
+                <span className="absolute left-4 top-3 text-2xl text-gray-500">₹</span>
+                <input
+                  type="number"
+                  min="10"
+                  value={customAmount}
+                  onChange={(e) => {
+                    setCustomAmount(e.target.value);
+                    setSelectedOption(null);
+                  }}
+                  placeholder="Enter amount"
+                  className="w-full pl-12 pr-4 py-3 text-xl font-semibold border-2 border-gray-300 rounded-lg focus:outline-none focus:border-amber-500"
+                />
+              </div>
+            </div>
+
+            {/* Name */}
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Your Name *
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter your name"
+                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-amber-500"
+              />
+            </div>
+
+            {/* Message */}
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Your Message (optional)
+              </label>
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Say something nice! 💬"
+                maxLength={100}
+                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-amber-500 resize-none"
+                rows="3"
+              />
+              <p className="text-xs text-gray-500 mt-1 text-right">
+                {message.length}/100
+              </p>
+            </div>
+
+            {/* Private Checkbox */}
+            <div className="mb-8 flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <input
+                type="checkbox"
+                id="private"
+                checked={isPrivate}
+                onChange={(e) => setIsPrivate(e.target.checked)}
+                className="w-5 h-5 cursor-pointer accent-amber-600"
+              />
+              <label htmlFor="private" className="text-gray-700 font-medium cursor-pointer">
+                Keep this donation private (won&apos;t be shown in the feed)
+              </label>
+            </div>
+
+            {/* Pay Button */}
+            <button
+              onClick={() => handlePayment(amount)}
+              disabled={loading || !amount || !name.trim()}
+              className="w-full py-4 bg-linear-to-r from-amber-600 to-orange-600 text-white text-xl font-bold rounded-lg hover:from-amber-700 hover:to-orange-700 disabled:from-gray-400 disabled:to-gray-500 transition-all transform hover:scale-105 shadow-lg"
+            >
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <div className="animate-spin">⏳</div> Processing...
+                </span>
+              ) : amount ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Heart size={20} /> Support with ₹{amount}
+                </span>
+              ) : (
+                'Select amount'
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

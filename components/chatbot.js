@@ -38,6 +38,7 @@ export default function Chatbot() {
 
     try {
       const res = await fetch("https://hello-bot-7i7d.onrender.com/chat", {
+      // const res = await fetch("http://localhost:3002/chat", { //https://hello-bot-7i7d.onrender.com
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: input }),

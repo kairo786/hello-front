@@ -14,6 +14,7 @@ import { useSocket } from "../context/SocketContext";
 import Openchat from "../openchat/page";
 import CallUIPage from "@/components/callui";
 import { RiVideoOffLine } from "react-icons/ri";
+import dynamic from 'next/dynamic';
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -44,6 +45,19 @@ const ChatPage = () => {
   //   loadLordIconScript();
   // }, []);
 
+  const DynamicSplineBackground = dynamic(
+    () => import('../../components/SplineBackground'),
+    {
+      // SSR को बंद करें
+      ssr: false,
+      // लोडिंग स्टेट दिखाएं जबकि Spline लोड हो रहा है
+      loading: () => (
+        <div className="flex items-center justify-center h-screen text-lg text-gray-500">
+          Loading 3D graphics...
+        </div>
+      ),
+    }
+  );
   useEffect(() => {
     if (!user.primaryEmailAddress?.emailAddress) return;
     const loaduser = () => {
@@ -195,7 +209,7 @@ const ChatPage = () => {
       socket.off("call-accepted", clearCallTimeout);
       clearCallTimeout();
     };
-  }, [socket, callto, role]);
+  }, [socket, callto, role, selectedUser]);
 
 
 
@@ -210,7 +224,7 @@ const ChatPage = () => {
     return () => {
       socket.off("not-answered", handlenotanswer);
     };
-  }, [socket])
+  }, [route, socket])
 
 
   // Get self ID and other users
@@ -352,30 +366,8 @@ const ChatPage = () => {
             ) : (
               <div className="relative flex items-center justify-center h-full ml-0 overflow-hidden">
                 {/* IFRAME WRAPPER */}
-                <div className="relative hidden h-screen overflow-hidden md:block">
-                  <iframe
-                    src="https://my.spline.design/cutecomputerfollowcursor-CJSVMphXRTYr7F3TdIlLm8Wa/"
-                    frameBorder="0"
-                    width="1200"
-                    height="1200"
-                    style={{
-                      transform: "scale(0.6)",
-                      transformOrigin: "top center",
-                      pointerEvents: "auto",
-                    }}
-                  />
-
-                  {/* ✅ TEXT OVERLAY ON TOP OF IFRAME (POSITIONED LOWER) */}
-                  <div className="absolute z-20 text-center transform -translate-x-1/2 bottom-32 left-1/2">
-                    <h2 className="text-2xl text-gray-300">No chat selected</h2>
-                    <p className="mt-1 text-sm text-gray-500">
-                      Click on a user to start chatting
-                    </p>
-                  </div>
-                </div>
+               <DynamicSplineBackground />
               </div>
-
-
             )}
           </div>
         </div>

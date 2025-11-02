@@ -32,3 +32,28 @@ body {
   transform: scale(1.3); /* circle छोटा */
   margin-right: 5px;
 }
+/* globals.css */
+
+/* Keyframes for the first row (Left-to-Right loop) */
+@keyframes slide-to-left {
+  from {
+    /* start at 0% translation */
+    transform: translateX(0);
+  }
+  to {
+    /* translate by -50% to loop the doubled content */
+    transform: translateX(-50%); 
+  }
+}
+
+/* Keyframes for the second row (Right-to-Left loop) */
+@keyframes slide-to-right {
+  from {
+    /* start at -50% translation (to align the loop correctly) */
+    transform: translateX(-50%);
+  }
+  to {
+    /* translate back to 0% translation */
+    transform: translateX(0);
+  }
+}

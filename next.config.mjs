@@ -9,6 +9,16 @@ const nextConfig = {
     ];
     return config;
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'i.ibb.co',
+        // यदि आवश्यक हो तो पोर्ट और पाथनेम भी जोड़ा जा सकता है
+      },
+    ],
+  },
+  
 };
 
 export default nextConfig;

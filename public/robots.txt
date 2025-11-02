@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://hello-front-or8v.vercel.app/sitemap.xml
+Sitemap: https://www.hellotalk.in/sitemap.xml

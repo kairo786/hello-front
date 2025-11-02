@@ -1,6 +1,6 @@
 // app/sitemap.js
 export default async function sitemap() {
-  const baseUrl = "https://hello-front-or8v.vercel.app";
+  const baseUrl = "https:www.hellotalk.in";
 
   return [
     {

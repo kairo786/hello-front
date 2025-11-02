@@ -16,6 +16,7 @@ import { useButton } from "@/app/context/buttoncontext";
 import { useSocket } from "../context/SocketContext";
 import { useOffer } from "../context/offercontext";
 import { useRouter } from "next/navigation";
+import NudityDetector from "@/components/NudityDetector";
 import { RiAnchorLine } from "react-icons/ri";
 // import * as faceapi from 'face-api.js';
 
@@ -658,7 +659,7 @@ export default function Callpage({ Randompage }) {
         </div>
       </div>
       <ToastContainer />
-
+      {/* <NudityDetector videoRef={localRef} className="fixed top-40 hidden"/> */}
       {/* translation info page */}
       <AnimatePresence>
         {showlang && (
@@ -761,7 +762,7 @@ export default function Callpage({ Randompage }) {
                 <MICpage
                   micrequest={micrequest}
                   toid={toid}
-                  clasName={` ${Randompage ? "bottom-20 hidden":"top-52"} absolute z-20  right-10`}
+                  clasName={` ${Randompage ? "bottom-20 hidden":"top-52"} absolute z-0  right-10`}
                 />
               }
 
@@ -778,7 +779,7 @@ export default function Callpage({ Randompage }) {
 
           )}
 
-          {!showlang && isremotemute && <TranslateToSpeech selectedLang={selectedvoiceLang} setSelectedLang={setSelectedvoiceLang} selectedVoiceURI={selectedVoiceURI} setSelectedVoiceURI={setSelectedVoiceURI} className="absolute z-10" />}
+          {!showlang && isremotemute && <TranslateToSpeech selectedLang={selectedvoiceLang} setSelectedLang={setSelectedvoiceLang} selectedVoiceURI={selectedVoiceURI} setSelectedVoiceURI={setSelectedVoiceURI} className="absolute z-0" />}
           {/* translating animation */}
           {isremotemute && (
 
@@ -888,7 +889,6 @@ export default function Callpage({ Randompage }) {
             className={`${Randompage ? "object-cover w-full h-full" :"object-cover w-full min-h-max"}`}
             style={{ borderRadius: 10, border: "2px solid #333" }}
           />
-
           {/* Resize handles sirf chhoti video par */}
           {!swapvideo && (
             <>
@@ -912,7 +912,7 @@ export default function Callpage({ Randompage }) {
           )}
         </motion.div>
       </div>
-
+      
 
       {(tempofer && !Randompage) && <div className="absolute z-10 w-full bottom-2">
         <CallControls camerastream={localStream} data={callState.to} onCameraToggle={handleCameraToggle} />
