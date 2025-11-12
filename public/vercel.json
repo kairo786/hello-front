@@ -1,0 +1,5 @@
+{
+  "redirects": [
+    { "source": "/", "has": [{ "type": "host", "value": "hellotalk.in" }], "destination": "https://www.hellotalk.in/", "permanent": true }
+  ]
+}
