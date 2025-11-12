@@ -29,6 +29,7 @@ export default function RootLayout({ children }) {
       allowedRedirectOrigins={['https://hello-front-or8v-git-main-ankit-keros-projects.vercel.app']}>
       <html lang="en">
         <head>
+        <meta name="google-site-verification" content="8ce5GFljmMLPoKxn3lBTKEmoSZPYKAjhh0Vyecr-zZA" />
           <script
             async
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7982479296670505"
