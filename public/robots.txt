@@ -1,4 +1,4 @@
 User-agent: *
 Crawl-Delay: 20
-
+Allow:/
 Sitemap: https://www.hellotalk.in/sitemap.xml
