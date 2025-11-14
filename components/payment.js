@@ -575,7 +575,7 @@
 
 
 
-"use client";
+// "use client";
 // import { useState } from "react";
 
 // export default function PayButton() {
@@ -625,321 +625,477 @@
 
 
 
-import { useState, useEffect } from 'react';
-import { Heart, Coffee, X } from 'lucide-react';
+// import { useState, useEffect } from 'react';
+// import { Heart, Coffee, X } from 'lucide-react';
 
-export default function BuyMeCoffee() {
-  const [donations, setDonations] = useState([]);
-  const [name, setName] = useState('');
-  const [message, setMessage] = useState('');
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [customAmount, setCustomAmount] = useState('');
-  const [isPrivate, setIsPrivate] = useState(false);
-  const [loading, setLoading] = useState(false);
+// export default function BuyMeCoffee() {
+//   const [donations, setDonations] = useState([]);
+//   const [name, setName] = useState('');
+//   const [message, setMessage] = useState('');
+//   const [selectedOption, setSelectedOption] = useState(null);
+//   const [customAmount, setCustomAmount] = useState('');
+//   const [isPrivate, setIsPrivate] = useState(false);
+//   const [loading, setLoading] = useState(false);
 
-  const coffeeOptions = [
-    { id: 'coffee', label: 'Buy me a coffee', baseAmount: 100, emoji: '☕' },
-    { id: 'lunch', label: 'Buy me lunch', baseAmount: 300, emoji: '🍱' },
-    { id: 'dinner', label: 'Buy me dinner', baseAmount: 500, emoji: '🍽️' },
-    { id: 'movie', label: 'Movie night!', baseAmount: 750, emoji: '🎬' },
-  ];
+//   const coffeeOptions = [
+//     { id: 'coffee', label: 'Buy me a coffee', baseAmount: 100, emoji: '☕' },
+//     { id: 'lunch', label: 'Buy me lunch', baseAmount: 300, emoji: '🍱' },
+//     { id: 'dinner', label: 'Buy me dinner', baseAmount: 500, emoji: '🍽️' },
+//     { id: 'movie', label: 'Movie night!', baseAmount: 750, emoji: '🎬' },
+//   ];
 
-  const multipliers = [1, 2, 3, 5];
+//   const multipliers = [1, 2, 3, 5];
 
-  // Load donations from storage
+//   // Load donations from storage
+//   useEffect(() => {
+//     const loadDonations = async () => {
+//       try {
+//         const result = await window.storage?.get('donations-list');
+//         if (result?.value) {
+//           setDonations(JSON.parse(result.value));
+//         }
+//       } catch (error) {
+//         console.error('Load error:', error);
+//       }
+//     };
+//     loadDonations();
+//   }, []);
+
+//   // Save donations to storage
+//   const saveDonations = async (newDonations) => {
+//     try {
+//       await window.storage?.set('donations-list', JSON.stringify(newDonations), true);
+//       setDonations(newDonations);
+//     } catch (error) {
+//       console.error('Save error:', error);
+//     }
+//   };
+
+//   const handlePayment = async (amount) => {
+//     if (!name.trim()) {
+//       alert('Please enter your name');
+//       return;
+//     }
+
+//     setLoading(true);
+
+//     try {
+//       const response = await fetch('/api/razorpay', {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ amount }),
+//       });
+
+//       if (!response.ok) {
+//         throw new Error('Failed to create order');
+//       }
+
+//       const order = await response.json();
+
+//       const options = {
+//         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+//         amount: order.amount,
+//         currency: order.currency,
+//         name: 'Buy Me A Coffee',
+//         description: `Support from ${name}`,
+//         order_id: order.id,
+//         handler: async function (response) {
+//           // Add donation to list only after successful payment
+//           if (!isPrivate) {
+//             const newDonation = {
+//               id: Date.now(),
+//               name: name.trim(),
+//               amount,
+//               message: message.trim(),
+//               timestamp: new Date().toLocaleString(),
+//             };
+//             const updated = [newDonation, ...donations];
+//             await saveDonations(updated);
+//           }
+
+//           // Reset form
+//           setName('');
+//           setMessage('');
+//           setSelectedOption(null);
+//           setCustomAmount('');
+//           setIsPrivate(false);
+//           alert('🎉 Thank you so much for your support!');
+//         },
+//         prefill: {
+//           name,
+//         },
+//         theme: {
+//           color: '#92400e',
+//         },
+//         modal: {
+//           ondismiss: function () {
+//             setLoading(false);
+//           },
+//         },
+//       };
+
+//       const rzp = new window.Razorpay(options);
+//       rzp.open();
+//     } catch (error) {
+//       console.error('Payment error:', error);
+//       alert('Error creating payment. Please try again.');
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const getAmount = () => {
+//     if (customAmount) return Number(customAmount);
+//     if (selectedOption) {
+//       const option = coffeeOptions.find(o => o.id === selectedOption.id);
+//       return option.baseAmount * selectedOption.multiplier;
+//     }
+//     return 0;
+//   };
+
+//   const amount = getAmount();
+
+//   return (
+//     <div className="min-h-screen bg-linear-to-br from-amber-50 via-orange-50 to-rose-50">
+
+//       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 max-w-7xl mx-auto">
+//         {/* Left - Donations Feed */}
+//         <div className="lg:col-span-1 order-2 lg:order-1">
+//           <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-6 max-h-[calc(100vh-48px)] overflow-y-auto">
+//             <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+//               <Heart size={24} className="text-red-500" />
+//               Recent Supporters
+//             </h2>
+
+//             {donations.length === 0 ? (
+//               <div className="text-center py-12">
+//                 <Coffee size={48} className="text-gray-300 mx-auto mb-4" />
+//                 <p className="text-gray-500 font-medium">No supporters yet</p>
+//                 <p className="text-gray-400 text-sm">Be the first one! ☕</p>
+//               </div>
+//             ) : (
+//               <div className="space-y-4">
+//                 {donations.map((donation) => (
+//                   <div
+//                     key={donation.id}
+//                     className="bg-linear-to-r from-amber-50 to-orange-50 rounded-lg p-4 border-l-4 border-amber-400 hover:shadow-md transition-shadow"
+//                   >
+//                     <div className="flex justify-between items-start mb-2">
+//                       <p className="font-bold text-gray-900">{donation.name}</p>
+//                       <p className="text-lg font-bold text-amber-700">₹{donation.amount}</p>
+//                     </div>
+//                     {donation.message && (
+//                       <p className="text-gray-700 italic text-sm mb-2">
+//                         &quot;{donation.message}&quot;
+//                       </p>
+//                     )}
+//                     <p className="text-xs text-gray-500">{donation.timestamp}</p>
+//                   </div>
+//                 ))}
+//               </div>
+//             )}
+//           </div>
+//         </div>
+
+//         {/* Right - Payment Form */}
+//         <div className="lg:col-span-2 order-1 lg:order-2">
+//           <div className="bg-white rounded-2xl shadow-lg p-8">
+//             {/* Header */}
+//             <div className="text-center mb-8">
+//               <Coffee size={64} className="text-amber-700 mx-auto mb-4 drop-shadow-lg" />
+//               <h1 className="text-4xl font-bold text-gray-900 mb-2">
+//                 Buy me a coffee
+//               </h1>
+//               <p className="text-gray-600">
+//                 Your support fuels my creativity and keeps me going! ☕
+//               </p>
+//             </div>
+
+//             {/* Coffee Options */}
+//             <div className="mb-8">
+//               <h3 className="text-lg font-semibold text-gray-900 mb-4">Select Option</h3>
+//               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+//                 {coffeeOptions.map((option) => (
+//                   <div key={option.id} className="border-2 border-gray-200 rounded-lg p-4 hover:border-amber-400 transition-colors">
+//                     <div className="flex items-center justify-between mb-3">
+//                       <div>
+//                         <p className="font-semibold text-gray-900">{option.label}</p>
+//                         <p className="text-sm text-gray-600">Base: ₹{option.baseAmount}</p>
+//                       </div>
+//                       <span className="text-3xl">{option.emoji}</span>
+//                     </div>
+//                     <div className="flex flex-wrap gap-2">
+//                       {multipliers.map((mult) => (
+//                         <button
+//                           key={mult}
+//                           onClick={() => {
+//                             setSelectedOption({ id: option.id, multiplier: mult });
+//                             setCustomAmount('');
+//                           }}
+//                           className={`px-3 py-1 rounded font-semibold text-sm transition-colors ${
+//                             selectedOption?.id === option.id && selectedOption?.multiplier === mult
+//                               ? 'bg-amber-600 text-white'
+//                               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+//                           }`}
+//                         >
+//                           ×{mult}
+//                         </button>
+//                       ))}
+//                     </div>
+//                     {selectedOption?.id === option.id && (
+//                       <p className="text-lg font-bold text-amber-700 mt-2">
+//                         ₹{option.baseAmount * selectedOption.multiplier}
+//                       </p>
+//                     )}
+//                   </div>
+//                 ))}
+//               </div>
+//             </div>
+
+//             {/* Custom Amount */}
+//             <div className="mb-8">
+//               <label className="block text-lg font-semibold text-gray-900 mb-3">
+//                 💰 Or enter custom amount
+//               </label>
+//               <div className="relative">
+//                 <span className="absolute left-4 top-3 text-2xl text-gray-500">₹</span>
+//                 <input
+//                   type="number"
+//                   min="10"
+//                   value={customAmount}
+//                   onChange={(e) => {
+//                     setCustomAmount(e.target.value);
+//                     setSelectedOption(null);
+//                   }}
+//                   placeholder="Enter amount"
+//                   className="w-full pl-12 pr-4 py-3 text-xl font-semibold border-2 border-gray-300 rounded-lg focus:outline-none focus:border-amber-500"
+//                 />
+//               </div>
+//             </div>
+
+//             {/* Name */}
+//             <div className="mb-6">
+//               <label className="block text-sm font-semibold text-gray-700 mb-2">
+//                 Your Name *
+//               </label>
+//               <input
+//                 type="text"
+//                 value={name}
+//                 onChange={(e) => setName(e.target.value)}
+//                 placeholder="Enter your name"
+//                 className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-amber-500"
+//               />
+//             </div>
+
+//             {/* Message */}
+//             <div className="mb-6">
+//               <label className="block text-sm font-semibold text-gray-700 mb-2">
+//                 Your Message (optional)
+//               </label>
+//               <textarea
+//                 value={message}
+//                 onChange={(e) => setMessage(e.target.value)}
+//                 placeholder="Say something nice! 💬"
+//                 maxLength={100}
+//                 className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-amber-500 resize-none"
+//                 rows="3"
+//               />
+//               <p className="text-xs text-gray-500 mt-1 text-right">
+//                 {message.length}/100
+//               </p>
+//             </div>
+
+//             {/* Private Checkbox */}
+//             <div className="mb-8 flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+//               <input
+//                 type="checkbox"
+//                 id="private"
+//                 checked={isPrivate}
+//                 onChange={(e) => setIsPrivate(e.target.checked)}
+//                 className="w-5 h-5 cursor-pointer accent-amber-600"
+//               />
+//               <label htmlFor="private" className="text-gray-700 font-medium cursor-pointer">
+//                 Keep this donation private (won&apos;t be shown in the feed)
+//               </label>
+//             </div>
+
+//             {/* Pay Button */}
+//             <button
+//               onClick={() => handlePayment(amount)}
+//               disabled={loading || !amount || !name.trim()}
+//               className="w-full py-4 bg-linear-to-r from-amber-600 to-orange-600 text-white text-xl font-bold rounded-lg hover:from-amber-700 hover:to-orange-700 disabled:from-gray-400 disabled:to-gray-500 transition-all transform hover:scale-105 shadow-lg"
+//             >
+//               {loading ? (
+//                 <span className="flex items-center justify-center gap-2">
+//                   <div className="animate-spin">⏳</div> Processing...
+//                 </span>
+//               ) : amount ? (
+//                 <span className="flex items-center justify-center gap-2">
+//                   <Heart size={20} /> Support with ₹{amount}
+//                 </span>
+//               ) : (
+//                 'Select amount'
+//               )}
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+// components/VideoModeration.js
+// components/VideoModeration.js
+// app/page.js
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+
+export default function Page() {
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const intervalRef = useRef(null);
+
+  const [status, setStatus] = useState('idle'); // idle | streaming | checking | blocked
+  const [nudity, setNudity] = useState(false);
+  const [lastLabels, setLastLabels] = useState([]);
+  const [error, setError] = useState(null);
+
+  const CAPTURE_INTERVAL = 1500; // ms, tweak for perf / cost
+
   useEffect(() => {
-    const loadDonations = async () => {
+    let mounted = true;
+
+    async function startCamera() {
+      setStatus('starting');
       try {
-        const result = await window.storage?.get('donations-list');
-        if (result?.value) {
-          setDonations(JSON.parse(result.value));
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        if (!mounted) {
+          // stop stream if component unmounted quickly
+          stream.getTracks().forEach(t => t.stop());
+          return;
         }
-      } catch (error) {
-        console.error('Load error:', error);
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+        setStatus('streaming');
+
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+
+        async function captureAndCheck() {
+          if (!videoRef.current || videoRef.current.readyState < 2) return;
+
+          // fit canvas to video size
+          canvas.width = videoRef.current.videoWidth || 640;
+          canvas.height = videoRef.current.videoHeight || 480;
+
+          ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+
+          // get compressed image to reduce upload size
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+
+          setStatus('checking');
+          try {
+            const res = await fetch('/api/moderate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ image: dataUrl })
+            });
+            const json = await res.json();
+            console.log(json);
+            if (json.error) {
+              console.error('API error', json);
+            } else {
+              setNudity(!!json.nudity);
+              setLastLabels(json.confidence || json.rawLabels || []);
+            }
+          } catch (err) {
+            console.error(err);
+            setError(String(err));
+          } finally {
+            setStatus('streaming');
+          }
+        }
+
+        // capture immediately then every interval
+        captureAndCheck();
+        intervalRef.current = setInterval(captureAndCheck, CAPTURE_INTERVAL);
+      } catch (err) {
+        console.error('Camera start error', err);
+        setError('Camera permission denied or no camera found.');
+        setStatus('blocked');
+      }
+    }
+
+    startCamera();
+
+    return () => {
+      mounted = false;
+      // stop interval
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      // stop tracks
+      const stream = videoRef.current?.srcObject;
+      if (stream) {
+        stream.getTracks().forEach(t => t.stop());
       }
     };
-    loadDonations();
   }, []);
 
-  // Save donations to storage
-  const saveDonations = async (newDonations) => {
-    try {
-      await window.storage?.set('donations-list', JSON.stringify(newDonations), true);
-      setDonations(newDonations);
-    } catch (error) {
-      console.error('Save error:', error);
-    }
-  };
-
-  const handlePayment = async (amount) => {
-    if (!name.trim()) {
-      alert('Please enter your name');
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const response = await fetch('/api/razorpay', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create order');
-      }
-
-      const order = await response.json();
-
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: order.amount,
-        currency: order.currency,
-        name: 'Buy Me A Coffee',
-        description: `Support from ${name}`,
-        order_id: order.id,
-        handler: async function (response) {
-          // Add donation to list only after successful payment
-          if (!isPrivate) {
-            const newDonation = {
-              id: Date.now(),
-              name: name.trim(),
-              amount,
-              message: message.trim(),
-              timestamp: new Date().toLocaleString(),
-            };
-            const updated = [newDonation, ...donations];
-            await saveDonations(updated);
-          }
-
-          // Reset form
-          setName('');
-          setMessage('');
-          setSelectedOption(null);
-          setCustomAmount('');
-          setIsPrivate(false);
-          alert('🎉 Thank you so much for your support!');
-        },
-        prefill: {
-          name,
-        },
-        theme: {
-          color: '#92400e',
-        },
-        modal: {
-          ondismiss: function () {
-            setLoading(false);
-          },
-        },
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (error) {
-      console.error('Payment error:', error);
-      alert('Error creating payment. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getAmount = () => {
-    if (customAmount) return Number(customAmount);
-    if (selectedOption) {
-      const option = coffeeOptions.find(o => o.id === selectedOption.id);
-      return option.baseAmount * selectedOption.multiplier;
-    }
-    return 0;
-  };
-
-  const amount = getAmount();
-
   return (
-    <div className="min-h-screen bg-linear-to-br from-amber-50 via-orange-50 to-rose-50">
+    <main className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+      <div className="w-full max-w-3xl space-y-4">
+        <h1 className="text-2xl font-semibold">Live Moderation — Rekognition demo</h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 max-w-7xl mx-auto">
-        {/* Left - Donations Feed */}
-        <div className="lg:col-span-1 order-2 lg:order-1">
-          <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-6 max-h-[calc(100vh-48px)] overflow-y-auto">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <Heart size={24} className="text-red-500" />
-              Recent Supporters
-            </h2>
+        <div className="relative bg-black rounded-lg overflow-hidden">
+          {/* Video (blur when nudity detected) */}
+          <video
+            ref={videoRef}
+            className={`w-full h-auto block transform transition-all duration-300 ${nudity ? 'filter blur-md scale-105' : ''}`}
+            playsInline
+            muted
+            autoPlay
+          />
 
-            {donations.length === 0 ? (
-              <div className="text-center py-12">
-                <Coffee size={48} className="text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500 font-medium">No supporters yet</p>
-                <p className="text-gray-400 text-sm">Be the first one! ☕</p>
+          {/* overlay when blurred */}
+          {nudity && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="bg-black/60 text-white px-4 py-2 rounded">
+                Explicit content detected — video blurred
               </div>
-            ) : (
-              <div className="space-y-4">
-                {donations.map((donation) => (
-                  <div
-                    key={donation.id}
-                    className="bg-linear-to-r from-amber-50 to-orange-50 rounded-lg p-4 border-l-4 border-amber-400 hover:shadow-md transition-shadow"
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <p className="font-bold text-gray-900">{donation.name}</p>
-                      <p className="text-lg font-bold text-amber-700">₹{donation.amount}</p>
-                    </div>
-                    {donation.message && (
-                      <p className="text-gray-700 italic text-sm mb-2">
-                        &quot;{donation.message}&quot;
-                      </p>
-                    )}
-                    <p className="text-xs text-gray-500">{donation.timestamp}</p>
-                  </div>
-                ))}
-              </div>
-            )}
+            </div>
+          )}
+        </div>
+
+        {/* Hidden canvas for captures */}
+        <canvas ref={canvasRef} className="hidden" />
+
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div>
+            <div className="text-sm text-gray-600">Status: <span className="font-medium text-gray-800">{status}</span></div>
+            <div className="text-sm text-gray-600">Nudity detected: <span className={`font-medium ${nudity ? 'text-red-600' : 'text-green-600'}`}>{nudity ? 'YES' : 'NO'}</span></div>
+            {error && <div className="text-sm text-red-600">Error: {error}</div>}
+          </div>
+
+          <div className="text-sm text-gray-700">
+            <div>Last labels (confidence):</div>
+            <ul className="mt-2">
+              {lastLabels && lastLabels.length ? (
+                lastLabels.map((l, i) => (
+                  <li key={i} className="text-xs">
+                    {l.Name ?? l.name} — {(l.Confidence ?? l.confidence ?? 0).toFixed(1)}%
+                  </li>
+                ))
+              ) : (
+                <li className="text-xs text-gray-400">None</li>
+              )}
+            </ul>
           </div>
         </div>
 
-        {/* Right - Payment Form */}
-        <div className="lg:col-span-2 order-1 lg:order-2">
-          <div className="bg-white rounded-2xl shadow-lg p-8">
-            {/* Header */}
-            <div className="text-center mb-8">
-              <Coffee size={64} className="text-amber-700 mx-auto mb-4 drop-shadow-lg" />
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                Buy me a coffee
-              </h1>
-              <p className="text-gray-600">
-                Your support fuels my creativity and keeps me going! ☕
-              </p>
-            </div>
-
-            {/* Coffee Options */}
-            <div className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Select Option</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {coffeeOptions.map((option) => (
-                  <div key={option.id} className="border-2 border-gray-200 rounded-lg p-4 hover:border-amber-400 transition-colors">
-                    <div className="flex items-center justify-between mb-3">
-                      <div>
-                        <p className="font-semibold text-gray-900">{option.label}</p>
-                        <p className="text-sm text-gray-600">Base: ₹{option.baseAmount}</p>
-                      </div>
-                      <span className="text-3xl">{option.emoji}</span>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {multipliers.map((mult) => (
-                        <button
-                          key={mult}
-                          onClick={() => {
-                            setSelectedOption({ id: option.id, multiplier: mult });
-                            setCustomAmount('');
-                          }}
-                          className={`px-3 py-1 rounded font-semibold text-sm transition-colors ${
-                            selectedOption?.id === option.id && selectedOption?.multiplier === mult
-                              ? 'bg-amber-600 text-white'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
-                        >
-                          ×{mult}
-                        </button>
-                      ))}
-                    </div>
-                    {selectedOption?.id === option.id && (
-                      <p className="text-lg font-bold text-amber-700 mt-2">
-                        ₹{option.baseAmount * selectedOption.multiplier}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Custom Amount */}
-            <div className="mb-8">
-              <label className="block text-lg font-semibold text-gray-900 mb-3">
-                💰 Or enter custom amount
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-3 text-2xl text-gray-500">₹</span>
-                <input
-                  type="number"
-                  min="10"
-                  value={customAmount}
-                  onChange={(e) => {
-                    setCustomAmount(e.target.value);
-                    setSelectedOption(null);
-                  }}
-                  placeholder="Enter amount"
-                  className="w-full pl-12 pr-4 py-3 text-xl font-semibold border-2 border-gray-300 rounded-lg focus:outline-none focus:border-amber-500"
-                />
-              </div>
-            </div>
-
-            {/* Name */}
-            <div className="mb-6">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Your Name *
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Enter your name"
-                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-amber-500"
-              />
-            </div>
-
-            {/* Message */}
-            <div className="mb-6">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Your Message (optional)
-              </label>
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Say something nice! 💬"
-                maxLength={100}
-                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-amber-500 resize-none"
-                rows="3"
-              />
-              <p className="text-xs text-gray-500 mt-1 text-right">
-                {message.length}/100
-              </p>
-            </div>
-
-            {/* Private Checkbox */}
-            <div className="mb-8 flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-              <input
-                type="checkbox"
-                id="private"
-                checked={isPrivate}
-                onChange={(e) => setIsPrivate(e.target.checked)}
-                className="w-5 h-5 cursor-pointer accent-amber-600"
-              />
-              <label htmlFor="private" className="text-gray-700 font-medium cursor-pointer">
-                Keep this donation private (won&apos;t be shown in the feed)
-              </label>
-            </div>
-
-            {/* Pay Button */}
-            <button
-              onClick={() => handlePayment(amount)}
-              disabled={loading || !amount || !name.trim()}
-              className="w-full py-4 bg-linear-to-r from-amber-600 to-orange-600 text-white text-xl font-bold rounded-lg hover:from-amber-700 hover:to-orange-700 disabled:from-gray-400 disabled:to-gray-500 transition-all transform hover:scale-105 shadow-lg"
-            >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <div className="animate-spin">⏳</div> Processing...
-                </span>
-              ) : amount ? (
-                <span className="flex items-center justify-center gap-2">
-                  <Heart size={20} /> Support with ₹{amount}
-                </span>
-              ) : (
-                'Select amount'
-              )}
-            </button>
-          </div>
+        <div className="text-xs text-gray-500">
+          Note: Frames are sent to your server which calls Amazon Rekognition. Keep an eye on cost (calls per minute).
         </div>
       </div>
-    </div>
+    </main>
   );
 }

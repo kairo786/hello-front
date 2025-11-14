@@ -30,11 +30,6 @@ export default function RootLayout({ children }) {
       <html lang="en">
         <head>
         <meta name="google-site-verification" content="8ce5GFljmMLPoKxn3lBTKEmoSZPYKAjhh0Vyecr-zZA" />
-          <script
-            async
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7982479296670505"
-            crossOrigin="anonymous"
-          ></script>
           <Script
             src="https://checkout.razorpay.com/v1/checkout.js"
             strategy="afterInteractive"

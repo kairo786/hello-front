@@ -2,6 +2,7 @@
 import React from 'react';
 import { Users, Award, Target, Zap, Globe, Heart, Code, Lightbulb, TrendingUp, CheckCircle } from 'lucide-react';
 import Footer from '@/components/Footer';
+import GoogleAd from '@/components/adcomponet';
 export default function About() {
   const achievements = [
     { number: "10+", label: "Active Users", icon: Users },
@@ -659,6 +660,7 @@ export default function About() {
           </div>
         </div>
       </section>
+      <div><GoogleAd slot="1234567890" /></div>
       <Footer/>
     </div>
   );

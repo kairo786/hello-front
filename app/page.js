@@ -180,7 +180,7 @@ export default function Home() {
             transition={{ delay: 0.6 }}
           >
             {[
-              { number: "10K+", label: "Active Users" },
+              { number: "250+", label: "Active Users" },
               { number: "50+", label: "Languages" },
               { number: "24/7", label: "Available" }
             ].map((stat, index) => (

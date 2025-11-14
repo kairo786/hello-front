@@ -6,8 +6,8 @@ import { useState, useEffect, useRef } from 'react';
 
 const RandomChatUI = ({ socket, partnerid }) => {
     const [messages, setMessages] = useState([
-        { id: 1, text: "Hello! 👋", sender: 'other', timestamp: new Date() },
-        { id: 2, text: "Hi there! How can I help you?", sender: 'me', timestamp: new Date() },
+        // { id: 1, text: "Hello! 👋", sender: 'other', timestamp: new Date() },
+        // { id: 2, text: "Hi there! How can I help you?", sender: 'me', timestamp: new Date() },
     ]);
     const [newMessage, setNewMessage] = useState('');
     const messagesEndRef = useRef(null);
@@ -84,33 +84,42 @@ const RandomChatUI = ({ socket, partnerid }) => {
                 <div className="py-2  md:py-1 rounded-t-2xl bg-gradient-to-b from-slate-700/60 to-slate-800/70">
                 </div>
                 {/* Messages Container */}
-                <div className=" p-4 md:pb-0 space-y-4 overflow-y-auto bg-gradient-to-b from-slate-800/60 to-slate-900/80 h-80  min-h-[35vh] max-h-[30vh] md:min-h-[29vh] md:max-h-max md:h-[20vh] ">
-                    {messages.map((message) => (
-                        <div
-                            key={message.id}
-                            className={`flex ${message.sender === 'me' ? 'justify-end' : 'justify-start'}`}
-                        >
+                <div className="p-4 md:pb-0 space-y-4 overflow-y-auto bg-gradient-to-b from-slate-800/60 to-slate-900/80 h-80 min-h-[35vh] max-h-[30vh] md:min-h-[29vh] md:max-h-max md:h-[20vh]">
+
+                    {/* If no messages → show placeholder */}
+                    {messages.length === 0 ? (
+                        <div className="h-full flex flex-col items-center justify-center text-center text-gray-300">
+                            <div className="text-4xl mb-2 animate-pulse">💗</div>
+                            <p className="text-lg font-semibold text-indigo-400">Start your chat here</p>
+                            <p className="text-sm opacity-70">Say hello to begin the conversation...</p>
+                        </div>
+                    ) : (
+                        messages.map((message) => (
                             <div
-                                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${message.sender === 'me'
-                                    ? 'bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 text-white shadow-lg rounded-br-none'
-                                    : 'bg-gradient-to-br from-teal-200 via-emerald-200 to-lime-200 text-emerald-900 shadow-md border border-emerald-300 rounded-bl-none'
-                                    }`}
+                                key={message.id}
+                                className={`flex ${message.sender === 'me' ? 'justify-end' : 'justify-start'}`}
                             >
-                                <p className="text-sm break-words whitespace-pre-wrap">{message.text}</p>
-                                <p
-                                    className={`text-xs mt-1 ${message.sender === 'me'
-                                        ? 'text-blue-200'
-                                        : 'text-emerald-700'
+                                <div
+                                    className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${message.sender === 'me'
+                                            ? 'bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 text-white shadow-lg rounded-br-none'
+                                            : 'bg-gradient-to-br from-teal-200 via-emerald-200 to-lime-200 text-emerald-900 shadow-md border border-emerald-300 rounded-bl-none'
                                         }`}
                                 >
-                                    {formatTime(message.timestamp)}
-                                </p>
+                                    <p className="text-sm break-words whitespace-pre-wrap">{message.text}</p>
+                                    <p
+                                        className={`text-xs mt-1 ${message.sender === 'me' ? 'text-blue-200' : 'text-emerald-700'
+                                            }`}
+                                    >
+                                        {formatTime(message.timestamp)}
+                                    </p>
+                                </div>
                             </div>
+                        ))
+                    )}
 
-                        </div>
-                    ))}
                     <div ref={messagesEndRef} />
                 </div>
+
 
                 {/* Message Input */}
                 <form onSubmit={handleSendMessage} className="p-3 md:p-2 border-t border-gray-700  rounded-b-2xl">

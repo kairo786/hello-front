@@ -1,66 +1,66 @@
-// components/GoogleAd.js
 "use client";
+
 import { useEffect, useRef } from "react";
 
 export default function GoogleAd({ slot }) {
-  const ref = useRef(null);
+  const adRef = useRef(null);
 
+  // Load script only once
   useEffect(() => {
-    if (!ref.current) return;
+    const scriptId = "adsense-script";
+    if (document.getElementById(scriptId)) return;
 
-    const pushAd = () => {
-       try {
-      if (typeof window !== "undefined") {
-        // Prevent multiple pushes
-        if (!ref.current.hasAttribute("data-adsbygoogle-status")) {
-          (window.adsbygoogle = window.adsbygoogle || []).push({});
-          console.log("Ad loaded for slot:", slot);
-        }
-      }
-    } catch (e) {
-      console.error("Ad push error:", e);
-    }
-    };
+    const script = document.createElement("script");
+    script.id = scriptId;
+    script.async = true;
+    script.src =
+      "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7982479296670505";
+    script.crossOrigin = "anonymous";
+    document.head.appendChild(script);
+  }, []);
 
-    if (ref.current.offsetWidth > 0) {
-      pushAd();
+  // Render ad
+  useEffect(() => {
+    if (!adRef.current) return;
+
+    // Already rendered? skip
+    if (adRef.current.getAttribute("data-adsbygoogle-status") === "done") {
       return;
     }
 
-    let ro;
-    if (typeof ResizeObserver !== "undefined") {
-      ro = new ResizeObserver((entries) => {
-        for (const entry of entries) {
-          if (entry.contentRect.width > 0) {
-            pushAd();
-            ro.disconnect();
-            break;
-          }
-        }
-      });
-      ro.observe(ref.current);
-    } else {
-      const id = setInterval(() => {
-        if (ref.current && ref.current.offsetWidth > 0) {
-          pushAd();
-          clearInterval(id);
-        }
-      }, 300);
-    }
+    const pushAd = () => {
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (e) {
+        console.error("Ad push error:", e);
+      }
+    };
 
-    return () => ro?.disconnect();
+    // Wait until script has loaded
+    if (window.adsbygoogle && window.adsbygoogle.loaded) {
+      pushAd();
+    } else {
+      // Poll until script loads
+      const interval = setInterval(() => {
+        if (window.adsbygoogle && window.adsbygoogle.loaded) {
+          pushAd();
+          clearInterval(interval);
+        }
+      }, 100);
+
+      return () => clearInterval(interval);
+    }
   }, [slot]);
 
   return (
     <ins
-      ref={ref}
+      ref={adRef}
       className="adsbygoogle"
-      style={{ display: "block", minHeight: "50px", textAlign: "center" }}
+      style={{ display: "block" }}
       data-ad-client="ca-pub-7982479296670505"
-      // data-ad-client="ca-pub-3940256099942544"
       data-ad-slot={slot}
       data-ad-format="auto"
       data-full-width-responsive="true"
-    />
+    ></ins>
   );
 }
