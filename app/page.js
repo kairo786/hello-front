@@ -228,7 +228,8 @@ export default function Home() {
         </motion.div>
       )}
 
-      <Footer />
+      <Footer/>
+      <span id="footer"/>
     </div>
   );
 }
