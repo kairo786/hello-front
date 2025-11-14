@@ -41,10 +41,10 @@ export default function NotFound() {
             Oops! Lost in the digital void?
           </h2>
           <p className="text-lg text-gray-300 leading-relaxed mb-2">
-            The page you're looking for has vanished into the digital abyss. 
+            The page you&apos;re looking for has vanished into the digital abyss. 
           </p>
           <p className="text-base text-gray-400">
-            Don't worry, let's get you back on track.
+            Don&apos;t worry, let&apos;s get you back on track.
           </p>
         </div>
 
