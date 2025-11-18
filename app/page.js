@@ -44,7 +44,16 @@ export default function Home() {
     <div className="min-h-screen text-white bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
       <Navbar />
-
+      <div>
+        <amp-ad width="100vw" height="320"
+     type="adsense"
+     data-ad-client="ca-pub-7982479296670505"
+     data-ad-slot="2498539975"
+     data-auto-format="rspv"
+     data-full-width="">
+  <div overflow=""></div>
+</amp-ad>
+      </div>
       {/* Hero Section with Animated Background */}
       <div className="relative overflow-hidden">
         {/* Animated Gradient Background */}

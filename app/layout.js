@@ -36,6 +36,7 @@ export default function RootLayout({ children }) {
           />
           <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7982479296670505"
             crossorigin="anonymous"></script>
+            <script async custom-element="amp-ad" src="https://cdn.ampproject.org/v0/amp-ad-0.1.js"></script>
         </head>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
