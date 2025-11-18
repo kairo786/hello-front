@@ -33,6 +33,8 @@ const isPublicRoute = createRouteMatcher([
   // स्टैटिक एसेट्स और इंटरनल फ़ाइलें
   '/animations(.*)',
   '/vercel.json',
+  '/contact',
+  '/about',
   
   // अन्य सभी फ़ाइलें जो public/ फ़ोल्डर में रूट पर हैं
   // यदि कोई अन्य public/ फ़ाइल है जो बिना लॉगिन के क्रॉल होनी चाहिए:
