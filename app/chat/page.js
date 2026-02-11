@@ -2,16 +2,16 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { useUser } from "@clerk/nextjs";
-import { UserButton } from "@clerk/nextjs";
+import { useUser,useClerk ,RedirectToSignIn } from "@clerk/clerk-react";
+import { UserButton } from "@clerk/clerk-react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Roboto } from "next/font/google";
 import Spline from '@splinetool/react-spline/next';
-import { useButton } from "../context/buttoncontext";
-import { useOffer } from "../context/offercontext";
-import { useSocket } from "../context/SocketContext";
-import Openchat from "../openchat/page";
+import { useButton } from "@/components/pages/context/buttoncontext";
+import { useOffer } from "@/components/pages/context/offercontext";
+import { useSocket } from "@/components/pages/context/SocketContext";
+import Openchat from "@/components/pages/openchat/page";
 import CallUIPage from "@/components/callui";
 import { RiVideoOffLine } from "react-icons/ri";
 import dynamic from 'next/dynamic';
@@ -27,13 +27,15 @@ const ChatPage = () => {
   const { callState, setCallState } = useButton();
   const { incomingOffer, setIncomingOffer } = useOffer();
   const socket = useSocket();
-  const { isLoaded, user } = useUser();
+  const { isLoaded, user,isSignedIn } = useUser();
   const route = useRouter();
   const [users, setUsers] = useState({});
   const [role, setRole] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [callto, setcallto] = useState({});
   const callTimeoutRef = useRef(null);
+  const { redirectToSignIn } = useClerk();
+
 
   // // Load lord-icon script
   // useEffect(() => {
@@ -44,6 +46,16 @@ const ChatPage = () => {
   //   };
   //   loadLordIconScript();
   // }, []);
+  // useEffect(() => {
+  //  if (user?.primaryEmailAddress?.emailAddress == null) {
+  //   // return <RedirectToSignIn />;       // ye component khud redirect kar dega
+  //   redirectToSignIn();
+  //   // alert('hi')
+  // }
+  // }, [isSignedIn, redirectToSignIn, user?.primaryEmailAddress?.emailAddress])
+  
+    
+
 
   const DynamicSplineBackground = dynamic(
     () => import('../../components/SplineBackground'),
@@ -59,7 +71,7 @@ const ChatPage = () => {
     }
   );
   useEffect(() => {
-    if (!user.primaryEmailAddress?.emailAddress) return;
+    if (!user?.primaryEmailAddress?.emailAddress) return;
     const loaduser = () => {
       fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/get-users?email=${user.primaryEmailAddress.emailAddress}`,
@@ -97,7 +109,7 @@ const ChatPage = () => {
     return () => {
       document.removeEventListener('visibilitychange', loaduser);
     };
-  }, [user.primaryEmailAddress?.emailAddress]);
+  }, [user?.primaryEmailAddress?.emailAddress]);
 
   // Handle visibility changes to maintain socket connection
   useEffect(() => {
@@ -214,6 +226,7 @@ const ChatPage = () => {
 
 
   useEffect(() => {
+    if(!socket) return;
     const handlenotanswer = () => {
       alert("you did not answered to the call");
       // window.location.href = '/'
@@ -239,7 +252,9 @@ const ChatPage = () => {
       username: data.username,
       imgurl: data.imgurl,
     }));
-
+   if (!isSignedIn) {
+    return <RedirectToSignIn />;    // yahi se direct redirect
+  }
   return (
     <div>
       {role === "receiver" ? (

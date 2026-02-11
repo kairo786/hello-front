@@ -1,4 +1,5 @@
 // components/SplineBackground.js
+"use client"
 
 export default function SplineBackground() {
   return (

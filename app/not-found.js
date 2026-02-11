@@ -1,3 +1,4 @@
+//not-found.js
 "use client"
 import Link from 'next/link';
 import { ChevronRight, Home, Search } from 'lucide-react';

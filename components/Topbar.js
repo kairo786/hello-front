@@ -1,6 +1,6 @@
 "use client"
 
-import { UserButton } from "@clerk/nextjs";
+import { UserButton } from "@clerk/clerk-react";
 
 export default function TopBar() {
   return (

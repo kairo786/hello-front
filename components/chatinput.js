@@ -3,7 +3,7 @@ import { useState, useRef} from 'react';
 import { FiSmile, FiPaperclip, FiMic, FiSend } from 'react-icons/fi';
 import EmojiPicker from 'emoji-picker-react';
 import { useEffect } from 'react';
-import { useSocket } from '@/app/context/SocketContext';
+import { useSocket } from './pages/context/SocketContext';
 import { RxCrossCircled } from "react-icons/rx";
 
 const ChatInput = ({ senderemail, receiveremail, handleopenchat, receiversocketid, replyTo ,setReplyTo}) => {

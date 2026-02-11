@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { Mic, Video, PhoneOff, Camera } from "lucide-react";
 import { useState } from "react";
-import { useSocket } from "@/app/context/SocketContext";
+import { useSocket } from "./pages/context/SocketContext";
 
 export default function CallControls({ camerastream , data ,onCameraToggle}) {
   const [cameraOn, setCameraOn] = useState(true);

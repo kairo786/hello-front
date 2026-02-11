@@ -2,11 +2,12 @@
 "use client";
 import RandomChatUI from '@/components/randomchatui';
 import { useState, useEffect, useRef } from 'react';
-import { useSocket } from '../context/SocketContext';
+import { useSocket } from '@/components/pages/context/SocketContext';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
-import { useButton } from '../context/buttoncontext';
-import { useOffer } from '../context/offercontext';
-import { useUser } from '@clerk/nextjs';
+import { useButton } from '@/components/pages/context/buttoncontext';
+import { useOffer } from '@/components/pages/context/offercontext';
+// import { useUser ,useClerk ,RedirectToSignIn} from '@clerk/nextjs';
+import { useUser ,useClerk ,RedirectToSignIn} from '@clerk/clerk-react';
 import Callpage from '../call/page';
 import { ToastContainer, toast } from 'react-toastify';
 
@@ -21,11 +22,16 @@ export default function VideoCallPage() {
   const { incomingOffer, setIncomingOffer } = useOffer();
   const [partnerid, setpartnerid] = useState();
   const socket = useSocket();
-  const { isLoaded, user } = useUser();
+  const { isLoaded, user,isSignedIn } = useUser();
   const [isfriendadded, setisfriendadded] = useState("default"); // "allowed"  ,"notallowed"
+  const { redirectToSignIn } = useClerk();
 
-
-
+  // useEffect(() => {
+  //  if (!socket) {
+  //   // return <RedirectToSignIn />;       // ye component khud redirect kar dega
+  //   redirectToSignIn();
+  // }
+  // }, [redirectToSignIn, socket])
 
   // Initialize media stream
   useEffect(() => {
@@ -110,6 +116,7 @@ export default function VideoCallPage() {
 
 
   useEffect(() => {
+    if(!socket) return;
     const MatchedHandler = ({ role, partnerId }) => {
       console.log("Matched as:", role, "with partner:", partnerId);
 
@@ -307,7 +314,7 @@ export default function VideoCallPage() {
     socket.off("canclemail", handleCancelMail);
   };
 
-}, [partnerid, senderemail, socket, user.primaryEmailAddress?.emailAddress]);
+}, [partnerid, senderemail, socket, user?.primaryEmailAddress?.emailAddress]);
 
 
   const addfriend = () => {
@@ -315,7 +322,9 @@ export default function VideoCallPage() {
     setsenderemail(user.primaryEmailAddress?.emailAddress);
     socket.emit("send-email", partnerid);
   }
-
+   if (!isSignedIn) {
+    return <RedirectToSignIn />;    // yahi se direct redirect
+  }
 
   return (
     <div className="relative h-screen overflow-hidden bg-gradient-to-br from-slate-950 via-purple-950 to-blue-950">

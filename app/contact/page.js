@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useUser } from '@clerk/nextjs';
+import { useUser } from '@clerk/clerk-react';
+
+
 export default function ContactPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -14,7 +16,7 @@ export default function ContactPage() {
     e.preventDefault();
     setStatus('sending');
     try {
-      const res = await fetch('/api/contact', {
+      const res = await fetch('https://hello-backend-2-8s0k.onrender.com/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, inputemail: email, message, email:user.primaryEmailAddress.emailAddress}),

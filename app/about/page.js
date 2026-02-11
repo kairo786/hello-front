@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+"use client"
 import React from 'react';
 import { Users, Award, Target, Zap, Globe, Heart, Code, Lightbulb, TrendingUp, CheckCircle } from 'lucide-react';
 import Footer from '@/components/Footer';

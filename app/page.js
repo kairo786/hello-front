@@ -11,8 +11,9 @@ import Slider from "@/components/slider";
 import Navbar from "@/components/Navbar";
 // import GoogleAd from "@/components/adcomponet";
 import Chatbot from "@/components/chatbot";
-import { useSocket } from "./context/SocketContext";
-import { useUser } from '@clerk/nextjs';
+import { useSocket } from "@/components/pages/context/SocketContext";
+// import { useUser } from '@clerk/nextjs';
+import { useUser } from '@clerk/clerk-react';
 import dynamic from 'next/dynamic';
 
 export default function Home() {

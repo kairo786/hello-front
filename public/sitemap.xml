@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://www.hellotalk.in/</loc>
+    <lastmod>2025-12-05T00:00:00.000Z</lastmod>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://www.hellotalk.in/chat</loc>
+    <lastmod>2025-12-05T00:00:00.000Z</lastmod>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://www.hellotalk.in/call</loc>
+    <lastmod>2025-12-05T00:00:00.000Z</lastmod>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://www.hellotalk.in/randomchat</loc>
+    <lastmod>2025-12-05T00:00:00.000Z</lastmod>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://www.hellotalk.in/about</loc>
+    <lastmod>2025-12-05T00:00:00.000Z</lastmod>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://www.hellotalk.in/contact</loc>
+    <lastmod>2025-12-05T00:00:00.000Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.hellotalk.in/chekmic</loc>
+    <lastmod>2025-12-05T00:00:00.000Z</lastmod>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://www.hellotalk.in/context</loc>
+    <lastmod>2025-12-05T00:00:00.000Z</lastmod>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://www.hellotalk.in/mic</loc>
+    <lastmod>2025-12-05T00:00:00.000Z</lastmod>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://www.hellotalk.in/openchat</loc>
+    <lastmod>2025-12-05T00:00:00.000Z</lastmod>
+    <priority>0.7</priority>
+  </url>
+
+</urlset>

@@ -2,19 +2,20 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import { useRef, useState, useEffect } from "react";
-import { UserButton } from "@clerk/nextjs";
+// import { UserButton } from "@clerk/nextjs";
+import { UserButton } from "@clerk/clerk-react";
 import { useUser } from "@clerk/clerk-react";
 import CallControls from "@/components/CallControls";
-import TranslateToSpeech from "../chekmic/page";
-import MICpage from "../mic/page";
+import TranslateToSpeech from "@/components/pages/chekmic/page";
+import MICpage from "@/components/pages/mic/page";
 import { ToastContainer, toast } from 'react-toastify';
 import { motion, AnimatePresence } from "framer-motion";
 import 'react-toastify/dist/ReactToastify.css';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 // import TopBar from "@/components/Topbar";
-import { useButton } from "@/app/context/buttoncontext";
-import { useSocket } from "../context/SocketContext";
-import { useOffer } from "../context/offercontext";
+import { useButton } from "@/components/pages/context/buttoncontext";
+import { useSocket } from "@/components/pages/context/SocketContext";
+import { useOffer } from "@/components/pages/context/offercontext";
 import { useRouter } from "next/navigation";
 import NudityDetector from "@/components/NudityDetector";
 import { RiAnchorLine } from "react-icons/ri";

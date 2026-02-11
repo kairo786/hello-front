@@ -1,7 +1,7 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
-import { useUser, UserButton, SignInButton,useClerk } from "@clerk/nextjs";
+import { useUser, UserButton, SignInButton,useClerk } from "@clerk/clerk-react";
 import Link from "next/link";
 import Image from "next/image";
 

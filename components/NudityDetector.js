@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { useUser } from '@clerk/nextjs';
+import { useUser } from '@clerk/clerk-react';
 // import nodemailer from 'nodemailer';
 
 
