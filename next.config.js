@@ -3,6 +3,7 @@ const nextConfig = {
   // output: "export",
   experimental: {
     optimizeCss: false, // बस ये रहने दो
+    turbopack: {},
   },
   webpack: (config) => {
     config.ignoreWarnings = [/Critical dependency: require function/];
