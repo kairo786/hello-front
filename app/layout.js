@@ -1,11 +1,13 @@
-"use client"
+// "use client"
 import "./globals.css";
 import Script from "next/script";
 import { ButtonProvider } from "@/components/pages/context/buttoncontext";
 import { OfferProvider } from "@/components/pages/context/offercontext";
 import SocketProviderWrapper from "@/components/pages/context/SocketProviderWrapper";
 import ClientScripts from "@/components/clientscript";
-import { ClerkProvider } from "@clerk/clerk-react";
+// import { ClerkProvider } from "@clerk/clerk-react";
+import { ClerkProvider } from "@clerk/nextjs";
+
 
 export default function RootLayout({ children }) {
   return (
