@@ -10,6 +10,7 @@ import { useOffer } from '@/components/pages/context/offercontext';
 import { useUser ,useClerk ,RedirectToSignIn} from '@clerk/clerk-react';
 import Callpage from '../call/page';
 import { ToastContainer, toast } from 'react-toastify';
+import GoogleAd from '@/components/adcomponet';
 
 export default function VideoCallPage() {
   const [isConnected, setIsConnected] = useState(false);
@@ -328,6 +329,7 @@ export default function VideoCallPage() {
 
   return (
     <div className="relative h-screen overflow-hidden bg-gradient-to-br from-slate-950 via-purple-950 to-blue-950">
+      {/* <GoogleAd slot="3590375461" /> */}
       {/* Animated background effects */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 h-full rounded-full left-1/4 w-96 bg-purple-500/20 blur-3xl animate-pulse"></div>

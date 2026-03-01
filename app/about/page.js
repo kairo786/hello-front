@@ -661,7 +661,7 @@ export default function About() {
           </div>
         </div>
       </section>
-      <div><GoogleAd slot="1234567890" /></div>
+      {/* <div><GoogleAd slot="1234567890" /></div> */}
       <Footer/>
     </div>
   );

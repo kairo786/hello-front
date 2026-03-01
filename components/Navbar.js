@@ -1,9 +1,212 @@
+// "use client";
+
+// import { motion, AnimatePresence } from "framer-motion";
+// import { useState, useEffect } from "react";
+// import { useUser, UserButton, SignInButton, useClerk } from "@clerk/clerk-react";
+// import Link from "next/link";
+// import Image from "next/image";
+// import LanguageButtons from "./LanguageButtons";
+
+// const links = [
+//   { name: "Home", href: "/" },
+//   { name: "Chat", href: "/chat" },
+//   { name: "About", href: "/about" },
+//   { name: "Contact", href: "/contact" },
+// ];
+
+// export default function Navbar() {
+//   const [isOpen, setIsOpen] = useState(false);
+//   const [darkMode, setDarkMode] = useState(false);
+//   const [langOpen, setLangOpen] = useState(false);
+
+//   const { isSignedIn } = useUser();
+//   const { redirectToSignIn } = useClerk();
+
+//   // System dark mode detect
+//   useEffect(() => {
+//     if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+//       setDarkMode(true);
+//     }
+//   }, []);
+
+//   // Apply dark class
+//   useEffect(() => {
+//     const root = document.documentElement;
+//     darkMode ? root.classList.add("dark") : root.classList.remove("dark");
+//   }, [darkMode]);
+
+//   // Close language dropdown on outside click
+//   useEffect(() => {
+//     const handleClick = (e) => {
+//       if (!e.target.closest(".lang-wrapper")) {
+//         setLangOpen(false);
+//       }
+//     };
+
+//     document.addEventListener("click", handleClick);
+//     return () => document.removeEventListener("click", handleClick);
+//   }, []);
+
+//   return (
+//     <nav className="relative w-full h-20 z-50 bg-white/70 dark:bg-gray-900/80 backdrop-blur shadow-md px-6 py-4 transition-colors duration-300">
+//       <div className="flex items-center justify-between max-w-7xl mx-auto">
+        
+//         {/* Logo */}
+//         <Link href="/" className="flex gap-2 text-2xl font-bold">
+//           <Image
+//             src="/helloicon.png"
+//             alt="Hello"
+//             width={50}
+//             height={50}
+//             className="dark:invert"
+//           />
+//           <h1 className="text-3xl font-serif font-bold text-green-800 dark:text-green-300 mt-2">
+//             Hello
+//           </h1>
+//         </Link>
+
+//         {/* Desktop Menu */}
+//         <div className="hidden md:flex gap-8 items-center">
+//           {links.map((link) => (
+//             <motion.div
+//               key={link.name}
+//               whileHover={{ scale: 1.1 }}
+//               className="relative group"
+//             >
+//               <Link
+//                 href={link.href}
+//                 className="text-gray-800 dark:text-gray-200 font-medium"
+//               >
+//                 {link.name}
+//               </Link>
+//               <span className="absolute left-0 bottom-0 h-0.5 bg-blue-500 dark:bg-blue-400 w-full scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" />
+//             </motion.div>
+//           ))}
+
+//           {/* 🌍 Language Button */}
+//           <div className="relative lang-wrapper">
+//             <button
+//               onClick={() => setLangOpen(!langOpen)}
+//               className="px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600"
+//             >
+//               🌍 Language
+//             </button>
+
+//             <AnimatePresence>
+//               {langOpen && (
+//                 <motion.div
+//                   initial={{ opacity: 0, y: -5 }}
+//                   animate={{ opacity: 1, y: 0 }}
+//                   exit={{ opacity: 0, y: -5 }}
+//                   transition={{ duration: 0.2 }}
+//                   className="absolute right-0 top-10 z-50"
+//                 >
+//                   <LanguageButtons />
+//                 </motion.div>
+//               )}
+//             </AnimatePresence>
+//           </div>
+
+//           {/* Auth */}
+//           {isSignedIn ? (
+//             <UserButton
+//               appearance={{
+//                 variables: { colorPrimary: darkMode ? "#4ade80" : "#166534" },
+//               }}
+//             />
+//           ) : (
+//             <span className="rounded-3xl flex items-center border-2 border-green-500 p-1 gap-2 px-2 bg-green-200">
+//               <img
+//                 onClick={() => redirectToSignIn()}
+//                 src="https://pngimg.com/uploads/google/google_PNG19630.png"
+//                 alt="google-img"
+//                 className="w-7 h-7 cursor-pointer"
+//               />
+//               <SignInButton />
+//             </span>
+//           )}
+//         </div>
+
+//         {/* Mobile Toggle */}
+//         <div className="md:hidden flex items-center gap-4">
+//           {isSignedIn ? (
+//             <UserButton />
+//           ) : (
+//             <span className="rounded-3xl flex items-center border-2 border-green-500 p-1 gap-2 px-2 bg-green-200">
+//               <img
+//                 onClick={() => redirectToSignIn()}
+//                 src="https://pngimg.com/uploads/google/google_PNG19630.png"
+//                 alt="google-img"
+//                 className="w-7 h-7"
+//               />
+//               <SignInButton />
+//             </span>
+//           )}
+
+//           <button
+//             onClick={() => setIsOpen(!isOpen)}
+//             className="text-gray-800 dark:text-gray-200"
+//           >
+//             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//               {isOpen ? (
+//                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+//               ) : (
+//                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+//               )}
+//             </svg>
+//           </button>
+//         </div>
+//       </div>
+
+//       {/* Mobile Menu */}
+//       <AnimatePresence>
+//         {isOpen && (
+//           <motion.div
+//             initial={{ opacity: 0, y: -10 }}
+//             animate={{ opacity: 1, y: 0 }}
+//             exit={{ opacity: 0, y: -10 }}
+//             transition={{ duration: 0.2 }}
+//             className="absolute top-20 left-0 w-full flex flex-col md:hidden px-4 pt-4 pb-4 bg-white dark:bg-gray-900 shadow-lg border-t border-gray-200 dark:border-gray-700 z-50"
+//           >
+//             {links.map((link) => (
+//               <Link
+//                 key={link.name}
+//                 href={link.href}
+//                 className="py-3 text-lg text-gray-800 dark:text-gray-200 border-b border-gray-200 dark:border-gray-700"
+//                 onClick={() => setIsOpen(false)}
+//               >
+//                 {link.name}
+//               </Link>
+//             ))}
+
+//             {/* 🌍 Mobile Language */}
+//             <div className="mt-4 lang-wrapper">
+//               <button
+//                 onClick={() => setLangOpen(!langOpen)}
+//                 className="w-full bg-blue-500 text-white py-2 rounded"
+//               >
+//                 🌍 Select Language
+//               </button>
+
+//               {langOpen && (
+//                 <div className="mt-2">
+//                   <LanguageButtons />
+//                 </div>
+//               )}
+//             </div>
+//           </motion.div>
+//         )}
+//       </AnimatePresence>
+//     </nav>
+//   );
+// }
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useUser, UserButton, SignInButton,useClerk } from "@clerk/clerk-react";
 import Link from "next/link";
 import Image from "next/image";
+import LanguageButtons from "./LanguageButtons";
 
 const links = [
   { name: "Home", href: "/" },
@@ -95,6 +298,7 @@ export default function Navbar() {
               <SignInButton />
             </span>
           )}
+          {/* <LanguageButtons /> */}
         </div>
 
         {/* Mobile Toggle */}

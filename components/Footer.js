@@ -11,7 +11,7 @@ export default function Footer() {
       </div>
 
       <div className="container relative z-10 px-4 py-12 mx-auto">
-        <GoogleAd slot="3590375461" />
+        {/* <GoogleAd slot="3590375461" /> */}
 
         <div className="grid items-center grid-cols-1 gap-8 md:grid-cols-3">
           {/* Social Links */}

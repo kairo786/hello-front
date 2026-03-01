@@ -7,6 +7,7 @@ import SocketProviderWrapper from "@/components/pages/context/SocketProviderWrap
 import ClientScripts from "@/components/clientscript";
 // import { ClerkProvider } from "@clerk/clerk-react";
 import { ClerkProvider } from "@clerk/nextjs";
+import GoogleTranslate from "@/components/GoogleTranslate";
 
 
 export default function RootLayout({ children }) {
@@ -53,12 +54,12 @@ export default function RootLayout({ children }) {
           src="https://checkout.razorpay.com/v1/checkout.js"
           strategy="afterInteractive"
         />
-        <Script
+        {/* <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7982479296670505"
           crossOrigin="anonymous"
           strategy="afterInteractive"
-        />
+        /> */}
         <Script
           async
           custom-element="amp-ad"
@@ -72,6 +73,7 @@ export default function RootLayout({ children }) {
             <ButtonProvider>
               <SocketProviderWrapper>
                 <ClientScripts />
+                {/* <GoogleTranslate /> */}
                 {children}
               </SocketProviderWrapper>
             </ButtonProvider>
