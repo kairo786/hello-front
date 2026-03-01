@@ -89,7 +89,7 @@ export default function BlogArticle({ params }) {
             users.
           </p>
           <Link
-            href="/video-call"
+            href="/randomchat"
             className="px-6 py-3 font-semibold text-black bg-white rounded-lg"
           >
             Start Now
