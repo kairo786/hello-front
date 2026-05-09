@@ -11,22 +11,7 @@ A modern frontend web application built with **Next.js 14** — fast, clean, and
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
----
 
-## 📁 Project Structure
-
-```
-hello-front/
-├── app/
-│   ├── layout.js       # Root layout
-│   ├── page.js         # Home page
-│   └── globals.css     # Global styles
-├── public/             # Static assets
-├── package.json
-└── next.config.js
-```
-
----
 
 ## ⚡ Getting Started
 
